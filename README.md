@@ -29,16 +29,7 @@
 - NVIDIA GPU + CUDA + CuDNN
 - Python 3.6
 - tensorflow-gpu
-- numpy
-- scipy
-- moviepy
-- Pillow
-- skimage
-- lmdb
-- opencv-python
-- cryptography
-- h5py
-- six
+- Other Python dependencies: numpy, scipy, moviepy, Pillow, skimage, lmdb, opencv-python, cryptography, h5py, six
 
 ## Dataset
 - Training image addresses and seven defect severity ground truth are in the file `data/train/defect_training_gt.csv`.
