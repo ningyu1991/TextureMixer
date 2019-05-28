@@ -36,20 +36,14 @@
 - Raw training and testing images are saved at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
   - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
   - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for our dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
-- For convenience, the prepared testing datasets can be downloaded [here](https://drive.google.com/drive/folders/139SR7doNmokZ72g4b9MW1-y3qPRJ-KkQ?usp=sharing).
+- For convenience, the prepared testing datasets can be downloaded: [animal texture](https://drive.google.com/file/d/15HGHJuEMMbaUPMyH23iQrru0teH1gJmw/view?usp=sharing), [earth texture](https://drive.google.com/file/d/1A08JnZEUJGAFuLkhYtkqz7t9qnjMjVVj/view?usp=sharing), [plant texture](https://drive.google.com/file/d/1HPTOc_10Uz1BXQK8_GrS0y9hEjnaBz-0/view?usp=sharing). Unzip and put under `datasets\`.
 
-## Network Architectures (visualize from [ethereon](http://ethereon.github.io/netscope/quickstart.html))
-- Multi-column holistic-input GoogLeNet is in the file `prototxt/GoogLeNet/holistic/deploy_holistic.prototxt`.
-- Multi-column patch-input GoogLeNet is in the file `prototxt/GoogLeNet/patch/deploy_patch.prototxt`.
+## Pre-Trained Models
+- The pre-trained TextureMixer models can be downloaded: [animal texture](https://drive.google.com/file/d/1zTRwT5W8ExfnPRUZQ5kcu70c_BYzT9u2/view?usp=sharing), [earth texture](https://drive.google.com/file/d/1ObAFBPGaRJFo11LUa0qNhRX14nTEWKC1/view?usp=sharing), [plant texture](https://drive.google.com/file/d/1lAMZyXy9wYzAjseeBLw6XWq1XY9FE9SV/view?usp=sharing).
 
-## Pre-trained Models
-- [Multi-column holistic-input GoogLeNet model](https://drive.google.com/file/d/1rW_ZmRXQasjiGt9gCAKBn7xpG_7GgnMR/view?usp=sharing) (download and put it under `model/GoogLeNet/`)
-- [Multi-column patch-input GoogLeNet model](https://drive.google.com/file/d/1xsx2aRc-PIscKTMWzjWOHCkCyG0h-0vA/view?usp=sharing) (download and put it under `model/GoogLeNet/`)
+## Applications
 
-## Infogain Weights
-- If users launch their own training or testing with the [infogain loss](http://caffe.berkeleyvision.org/doxygen/classcaffe_1_1InfogainLossLayer.html) as Eq. 1 in our [paper](https://arxiv.org/pdf/1612.01635.pdf), they can use our pre-computed weights at `data/infogain_mat/`, which follows the formulation as Eq. 4 in our [supplemental material](https://drive.google.com/file/d/1J3suq5UnSjCZGEkrqCHTnKUPlg505p7f/view?usp=sharing).
-
-## Testing
+### Texture Interpolation
 - First download testing images from the addresses in the first column in the file `data/test/defect_testing_gt.csv` into `data/test/original_resolution/`.
   Or put customized images into that directory.
 - Then run
