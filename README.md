@@ -30,6 +30,7 @@
 - Python 3.6
 - tensorflow-gpu
 - Other Python dependencies: numpy, scipy, moviepy, Pillow, skimage, lmdb, opencv-python, cryptography, h5py, six
+- Clone the [official VGG repository](https://github.com/machrisaa/tensorflow-vgg) into the current direcotory
 
 ## Dataset
 - Training image addresses and seven defect severity ground truth are in the file `data/train/defect_training_gt.csv`.
