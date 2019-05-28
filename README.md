@@ -1,15 +1,23 @@
 # TextureMixer
 
+<img src='fig/palette_brush_teaser.png' width=400>
+
 - Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) on controllable texture interpolation and several applications.
 - Contact: Ning Yu (ningyu AT umd DOT edu)
 
-## Texture Interpolation (more results are shown in the [paper](https://arxiv.org/pdf/1901.03447.pdf))
+## Texture Interpolation 128x1024 (more results are shown in the [paper](https://arxiv.org/pdf/1901.03447.pdf))
 <img src='fig/qual_eval.png' width=800>
 
-## Texture Dissolve
+## Texture Dissolve 1024x1024
 <img src='fig/texture_dissolve_animal_loop.gif' width=800>
 <img src='fig/texture_dissolve_plant_loop.gif' width=800>
 <img src='fig/texture_dissolve_earth_loop.gif' width=800>
+
+## Texture Brush 512x2048
+<img src='fig/texture_brush_animal_camouflage.gif' width=800>
+<img src='fig/texture_brush_animal.gif' width=800>
+<img src='fig/texture_brush_plant.gif' width=800>
+<img src='fig/texture_brush_earth.gif' width=800>
 
 ## Prerequisites
 - Linux
