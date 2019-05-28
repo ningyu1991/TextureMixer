@@ -77,8 +77,14 @@ def multi_layer_diff(feature, feature_, dtype):
 # Randomly and independently crop patches from a batch of images.
 def random_crop(images, minibatch_size, input_shape, output_shape):
     begin = tf.constant([0, 0], dtype=tf.int32)
-    rand_height = tf.random_uniform(shape=[1], minval=0, maxval=input_shape[2]-output_shape[2], dtype=tf.int32)
-    rand_width = tf.random_uniform(shape=[1], minval=0, maxval=input_shape[3]-output_shape[3], dtype=tf.int32)
+    if input_shape[2] == output_shape[2]:
+        rand_height = tf.constant([0], dtype=tf.int32, shape=[1])
+    else:
+        rand_height = tf.random_uniform(shape=[1], minval=0, maxval=input_shape[2]-output_shape[2], dtype=tf.int32)
+    if input_shape[3] == output_shape[3]:
+        rand_width = tf.constant([0], dtype=tf.int32, shape=[1])
+    else:
+        rand_width = tf.random_uniform(shape=[1], minval=0, maxval=input_shape[3]-output_shape[3], dtype=tf.int32)
     begin = tf.concat([begin, rand_height, rand_width], axis=0)
     crops = tf.slice(images, begin=begin, size=[minibatch_size, tf.shape(images)[1]] + output_shape[2:])
     return crops
@@ -92,10 +98,6 @@ def tiling_permutation(tensor, scale_h, scale_w, permutation_matrix_h, permutati
     tensor2 = tensor_tiled[:,:,h:-h,:]
     tensor3 = tf.concat([tensor, tensor_tiled[:,:,-h:,w:-w], tensor], axis=3)
     return tf.concat([tensor1, tensor2, tensor3], axis=2)
-
-def batch_permutation_blending(tensor1, tensor2, tensor2_reverse, minibatch_size):
-    mixing_factors = tf.random_uniform([minibatch_size, 1, 1, 1], 0.0, 1.0, dtype=tensor1.dtype)
-    return tfutil.lerp(tf.reverse(tensor1, axis=[0]), tensor1, mixing_factors), tfutil.lerp(tensor2_reverse, tensor2, mixing_factors), mixing_factors
 
 #----------------------------------------------------------------------------
 # AutoEncoder reconstruction loss function (rec-WGAN + pixel L1 + latent L1 + KL + interp-WGAN).
@@ -169,7 +171,7 @@ def EG_wgan(E_zg, E_zl, G, D_rec, G_fcn, D_interp, D_blend, minibatch_size, real
         loss = loss_addup(loss, KL_zl)
 
     # interpolated realism and global/local gram matrix losses
-    if interp_G_weight > 0.0:
+    if interp_G_weight > 0.0 or blend_interp_G_weight > 0.0:
         if zg_interp_variational == 'hard':
             interp_enc_zg_latents = tf.tile(enc_zg_latents, [1, 1, E_zl.output_shapes[0][2]*scale_h, E_zl.output_shapes[0][3]*scale_w])
         elif zg_interp_variational == 'variational':
@@ -191,28 +193,50 @@ def EG_wgan(E_zg, E_zl, G, D_rec, G_fcn, D_interp, D_blend, minibatch_size, real
         elif zl_interp_variational == 'permutational':
             interp_enc_zl_latents = tiling_permutation(enc_zl_latents, scale_h, scale_w, permutation_matrix_h_forward, permutation_matrix_w_forward)
 
-        interp_images_out = G_fcn.get_output_for(interp_enc_zg_latents, interp_enc_zl_latents)
-        crop_interp_images_out = random_crop(interp_images_out, minibatch_size, G_fcn.output_shape, D_interp.input_shape)
-        # interpolated realism
-        crop_interp_scores_out = fp32(D_interp.get_output_for(crop_interp_images_out))
-        crop_interp_G_loss = tf.reduce_mean(-crop_interp_scores_out, axis=[1,2,3])
-        crop_interp_G_loss *= interp_G_weight
-        crop_interp_G_loss = tfutil.autosummary('Loss/crop_interp_G_loss', crop_interp_G_loss)
-        loss = loss_addup(loss, crop_interp_G_loss)
-        # interpolated local gram matrix loss
-        if gram_weight > 0.0:
-            crop_interp_vgg = custom_Vgg19(crop_interp_images_out, data_dict=data_dict)
-            crop_interp_feature = [crop_interp_vgg.conv1_1, crop_interp_vgg.conv2_1, crop_interp_vgg.conv3_1, crop_interp_vgg.conv4_1, crop_interp_vgg.conv5_1]
-            crop_interp_gram = [gram_matrix(l, data_format='NHWC') for l in crop_interp_feature]
-            crop_interp_gram_loss = multi_layer_diff(crop_interp_gram, real_gram, dtype=crop_interp_images_out.dtype)
-            crop_interp_gram_loss *= gram_weight
-            crop_interp_gram_loss = tfutil.autosummary('Loss/crop_interp_gram_loss', crop_interp_gram_loss)
-            loss = loss_addup(loss, crop_interp_gram_loss)
+        if interp_G_weight > 0.0:
+            interp_images_out = G_fcn.get_output_for(interp_enc_zg_latents, interp_enc_zl_latents)
+            crop_interp_images_out = random_crop(interp_images_out, minibatch_size, G_fcn.output_shape, D_interp.input_shape)
+            # interpolated realism
+            crop_interp_scores_out = fp32(D_interp.get_output_for(crop_interp_images_out))
+            crop_interp_G_loss = tf.reduce_mean(-crop_interp_scores_out, axis=[1,2,3])
+            crop_interp_G_loss *= interp_G_weight
+            crop_interp_G_loss = tfutil.autosummary('Loss/crop_interp_G_loss', crop_interp_G_loss)
+            loss = loss_addup(loss, crop_interp_G_loss)
+            # interpolated local gram matrix loss
+            if gram_weight > 0.0:
+                crop_interp_vgg = custom_Vgg19(crop_interp_images_out, data_dict=data_dict)
+                crop_interp_feature = [crop_interp_vgg.conv1_1, crop_interp_vgg.conv2_1, crop_interp_vgg.conv3_1, crop_interp_vgg.conv4_1, crop_interp_vgg.conv5_1]
+                crop_interp_gram = [gram_matrix(l, data_format='NHWC') for l in crop_interp_feature]
+                crop_interp_gram_loss = multi_layer_diff(crop_interp_gram, real_gram, dtype=crop_interp_images_out.dtype)
+                crop_interp_gram_loss *= gram_weight
+                crop_interp_gram_loss = tfutil.autosummary('Loss/crop_interp_gram_loss', crop_interp_gram_loss)
+                loss = loss_addup(loss, crop_interp_gram_loss)
 
         # multi-texture interpolated realism
         if blend_interp_G_weight > 0.0:
-            interp_enc_zl_latents_reverse = tiling_permutation(tf.reverse(enc_zl_latents, axis=[0]), scale_h, scale_w, permutation_matrix_h_backward, permutation_matrix_w_backward)
-            blend_interp_enc_zg_latents, blend_interp_enc_zl_latents, alpha = batch_permutation_blending(interp_enc_zg_latents, interp_enc_zl_latents, interp_enc_zl_latents_reverse, minibatch_size)
+            if zg_interp_variational == 'hard':
+                interp_enc_zg_latents_reverse = tf.tile(tf.reverse(enc_zg_latents, axis=[0]), [1, 1, E_zl.output_shapes[0][2]*scale_h, E_zl.output_shapes[0][3]*scale_w])
+            elif zg_interp_variational == 'variational':
+                interp_enc_zg_latents_reverse = tf.random_normal([minibatch_size] + E_zg.output_shapes[0][1:])
+                interp_enc_zg_latents_reverse = interp_enc_zg_latents_reverse * tf.exp(tf.reverse(enc_zg_log_sigma, axis=[0])) + tf.reverse(enc_zg_mu, axis=[0])
+                interp_enc_zg_latents_reverse = tf.tile(interp_enc_zg_latents_reverse, [1, 1, E_zl.output_shapes[0][2]*scale_h, E_zl.output_shapes[0][3]*scale_w])
+            if zl_interp_variational == 'hard':
+                interp_enc_zl_latents_reverse = tf.tile(tf.reverse(enc_zl_latents, axis=[0]), [1, 1, scale_h, scale_w])
+            elif zl_interp_variational == 'variational':
+                interp_enc_zl_mu_reverse = tf.tile(tf.reverse(enc_zl_mu, axis=[0]), [1, 1, scale_h, scale_w])
+                interp_enc_zl_log_sigma_reverse = tf.tile(tf.reverse(enc_zl_log_sigma, axis=[0]), [1, 1, scale_h, scale_w])
+                interp_enc_zl_latents_reverse = tf.random_normal([minibatch_size] + G_fcn.input_shapes[1][1:])
+                interp_enc_zl_latents_reverse = interp_enc_zl_latents_reverse * tf.exp(interp_enc_zl_log_sigma_reverse) + interp_enc_zl_mu_reverse
+            elif zl_interp_variational == 'random':
+                interp_enc_zl_latents_1_reverse = tf.concat([tf.reverse(enc_zl_latents, axis=[0]), tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]-2*E_zl.output_shapes[0][3]]), tf.reverse(enc_zl_latents, axis=[0])], axis=3)
+                interp_enc_zl_latents_2_reverse = tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], G_fcn.input_shapes[1][2]-2*E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]])
+                interp_enc_zl_latents_3_reverse = tf.concat([tf.reverse(enc_zl_latents, axis=[0]), tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]-2*E_zl.output_shapes[0][3]]), tf.reverse(enc_zl_latents, axis=[0])], axis=3)
+                interp_enc_zl_latents_reverse = tf.concat([interp_enc_zl_latents_1_reverse, interp_enc_zl_latents_2_reverse, interp_enc_zl_latents_3_reverse], axis=2)
+            elif zl_interp_variational == 'permutational':
+                interp_enc_zl_latents_reverse = tiling_permutation(tf.reverse(enc_zl_latents, axis=[0]), scale_h, scale_w, permutation_matrix_h_backward, permutation_matrix_w_backward)
+            mixing_factors = tf.random_uniform([minibatch_size, 1, 1, 1], 0.0, 1.0, dtype=enc_zg_latents.dtype)
+            blend_interp_enc_zg_latents = tfutil.lerp(interp_enc_zg_latents_reverse, interp_enc_zg_latents, mixing_factors)
+            blend_interp_enc_zl_latents = tfutil.lerp(interp_enc_zl_latents_reverse, interp_enc_zl_latents, mixing_factors)
             blend_interp_images_out = G_fcn.get_output_for(blend_interp_enc_zg_latents, blend_interp_enc_zl_latents)
             crop_blend_interp_images_out = random_crop(blend_interp_images_out, minibatch_size, G_fcn.output_shape, D_blend.input_shape)
             crop_blend_interp_scores_out = fp32(D_blend.get_output_for(crop_blend_interp_images_out))
@@ -220,7 +244,7 @@ def EG_wgan(E_zg, E_zl, G, D_rec, G_fcn, D_interp, D_blend, minibatch_size, real
             crop_blend_interp_G_loss *= blend_interp_G_weight
             crop_blend_interp_G_loss = tfutil.autosummary('Loss/crop_blend_interp_G_loss', crop_blend_interp_G_loss)
             loss = loss_addup(loss, crop_blend_interp_G_loss)
-            # multi-texture interpolationed local gram matrix loss
+            # multi-texture interpolated local gram matrix loss
             if gram_weight > 0.0:
                 crop_blend_interp_vgg = custom_Vgg19(crop_blend_interp_images_out, data_dict=data_dict)
                 crop_blend_interp_feature = [crop_blend_interp_vgg.conv1_1, crop_blend_interp_vgg.conv2_1, crop_blend_interp_vgg.conv3_1, crop_blend_interp_vgg.conv4_1, crop_blend_interp_vgg.conv5_1]
@@ -440,9 +464,32 @@ def D_blend_wgangp(E_zg, E_zl, G_fcn, D_blend, D_blend_opt, minibatch_size, real
     elif zl_interp_variational == 'permutational':
         interp_enc_zl_latents = tiling_permutation(enc_zl_latents, scale_h, scale_w, permutation_matrix_h_forward, permutation_matrix_w_forward)
 
+    # interpolating in latent space in reverse order
+    if zg_interp_variational == 'hard':
+        interp_enc_zg_latents_reverse = tf.tile(tf.reverse(enc_zg_latents, axis=[0]), [1, 1, E_zl.output_shapes[0][2]*scale_h, E_zl.output_shapes[0][3]*scale_w])
+    elif zg_interp_variational == 'variational':
+        interp_enc_zg_latents_reverse = tf.random_normal([minibatch_size] + E_zg.output_shapes[0][1:])
+        interp_enc_zg_latents_reverse = interp_enc_zg_latents_reverse * tf.exp(tf.reverse(enc_zg_log_sigma, axis=[0])) + tf.reverse(enc_zg_mu, axis=[0])
+        interp_enc_zg_latents_reverse = tf.tile(interp_enc_zg_latents_reverse, [1, 1, E_zl.output_shapes[0][2]*scale_h, E_zl.output_shapes[0][3]*scale_w])
+    if zl_interp_variational == 'hard':
+        interp_enc_zl_latents_reverse = tf.tile(tf.reverse(enc_zl_latents, axis=[0]), [1, 1, scale_h, scale_w])
+    elif zl_interp_variational == 'variational':
+        interp_enc_zl_mu_reverse = tf.tile(tf.reverse(enc_zl_mu, axis=[0]), [1, 1, scale_h, scale_w])
+        interp_enc_zl_log_sigma_reverse = tf.tile(tf.reverse(enc_zl_log_sigma, axis=[0]), [1, 1, scale_h, scale_w])
+        interp_enc_zl_latents_reverse = tf.random_normal([minibatch_size] + G_fcn.input_shapes[1][1:])
+        interp_enc_zl_latents_reverse = interp_enc_zl_latents_reverse * tf.exp(interp_enc_zl_log_sigma_reverse) + interp_enc_zl_mu_reverse
+    elif zl_interp_variational == 'random':
+        interp_enc_zl_latents_1_reverse = tf.concat([tf.reverse(enc_zl_latents, axis=[0]), tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]-2*E_zl.output_shapes[0][3]]), tf.reverse(enc_zl_latents, axis=[0])], axis=3)
+        interp_enc_zl_latents_2_reverse = tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], G_fcn.input_shapes[1][2]-2*E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]])
+        interp_enc_zl_latents_3_reverse = tf.concat([tf.reverse(enc_zl_latents, axis=[0]), tf.random_normal([minibatch_size, G_fcn.input_shapes[1][1], E_zl.output_shapes[0][2], G_fcn.input_shapes[1][3]-2*E_zl.output_shapes[0][3]]), tf.reverse(enc_zl_latents, axis=[0])], axis=3)
+        interp_enc_zl_latents_reverse = tf.concat([interp_enc_zl_latents_1_reverse, interp_enc_zl_latents_2_reverse, interp_enc_zl_latents_3_reverse], axis=2)
+    elif zl_interp_variational == 'permutational':
+        interp_enc_zl_latents_reverse = tiling_permutation(tf.reverse(enc_zl_latents, axis=[0]), scale_h, scale_w, permutation_matrix_h_backward, permutation_matrix_w_backward)
+    mixing_factors = tf.random_uniform([minibatch_size, 1, 1, 1], 0.0, 1.0, dtype=enc_zg_latents.dtype)
+    blend_interp_enc_zg_latents = tfutil.lerp(interp_enc_zg_latents_reverse, interp_enc_zg_latents, mixing_factors)
+    blend_interp_enc_zl_latents = tfutil.lerp(interp_enc_zl_latents_reverse, interp_enc_zl_latents, mixing_factors)
+
     # generating and cropping
-    interp_enc_zl_latents_reverse = tiling_permutation(tf.reverse(enc_zl_latents, axis=[0]), scale_h, scale_w, permutation_matrix_h_backward, permutation_matrix_w_backward)
-    blend_interp_enc_zg_latents, blend_interp_enc_zl_latents, alpha = batch_permutation_blending(interp_enc_zg_latents, interp_enc_zl_latents, interp_enc_zl_latents_reverse, minibatch_size)
     blend_interp_images_out = G_fcn.get_output_for(blend_interp_enc_zg_latents, blend_interp_enc_zl_latents)
     crop_blend_interp_images_out = random_crop(blend_interp_images_out, minibatch_size, G_fcn.output_shape, D_blend.input_shape)
 
