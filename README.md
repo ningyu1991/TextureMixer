@@ -32,9 +32,9 @@
 - Other Python dependencies: numpy, scipy, moviepy, Pillow, skimage, lmdb, opencv-python, cryptography, h5py, six
 - Clone the [official VGG repository](https://github.com/machrisaa/tensorflow-vgg) into the current direcotory
 
-## Dataset
-- Training image addresses and seven defect severity ground truth are in the file `data/train/defect_training_gt.csv`.
-- Testing image addresses and seven defect severity ground truth are in the file `data/test/defect_testing_gt.csv`.
+## Datasets: Animal Texture, Earth Texture, Plant Texture
+- Raw training and testing images at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
+  - Modify `datasets/data_augmentation` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
 
 ## Network Architectures (visualize from [ethereon](http://ethereon.github.io/netscope/quickstart.html))
 - Multi-column holistic-input GoogLeNet is in the file `prototxt/GoogLeNet/holistic/deploy_holistic.prototxt`.
