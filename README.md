@@ -19,6 +19,11 @@
 <img src='fig/texture_brush_plant.gif' width=800>
 <img src='fig/texture_brush_earth.gif' width=800>
 
+## Animal hybridization
+<img src='fig/beardog.png' width=800>
+<img src='fig/leoraffe.png' width=800>
+<img src='fig/ziger.png' width=800>
+
 ## Prerequisites
 - Linux
 - NVIDIA GPU + CUDA CuDNN
