@@ -34,7 +34,7 @@
 
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
 - Raw training and testing images at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
-  - Modify `datasets/data_augmentation` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
+  - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128 \times 128 cropping. 
 
 ## Network Architectures (visualize from [ethereon](http://ethereon.github.io/netscope/quickstart.html))
 - Multi-column holistic-input GoogLeNet is in the file `prototxt/GoogLeNet/holistic/deploy_holistic.prototxt`.
