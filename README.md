@@ -35,7 +35,8 @@
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
 - Raw training and testing images are saved at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
   - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
-  - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for our dataset preparation. Use the `create_from_images` option in `dataset_tool.py`.
+  - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for our dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
+- For convenience, the prepared testing datasets can be downloaded [here](https://drive.google.com/drive/folders/139SR7doNmokZ72g4b9MW1-y3qPRJ-KkQ?usp=sharing).
 
 ## Network Architectures (visualize from [ethereon](http://ethereon.github.io/netscope/quickstart.html))
 - Multi-column holistic-input GoogLeNet is in the file `prototxt/GoogLeNet/holistic/deploy_holistic.prototxt`.
