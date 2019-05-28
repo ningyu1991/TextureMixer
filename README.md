@@ -33,8 +33,9 @@
 - Clone the [official VGG repository](https://github.com/machrisaa/tensorflow-vgg) into the current direcotory
 
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
-- Raw training and testing images at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
-  - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128 \times 128 cropping. 
+- Raw training and testing images are saved at `datasets/animal_texture/`, `datasets/earth_texture/`, and `datasets/plant_texture/`.
+  - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
+  - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for our dataset preparation. Use the `create_from_images` option in `dataset_tool.py`.
 
 ## Network Architectures (visualize from [ethereon](http://ethereon.github.io/netscope/quickstart.html))
 - Multi-column holistic-input GoogLeNet is in the file `prototxt/GoogLeNet/holistic/deploy_holistic.prototxt`.
