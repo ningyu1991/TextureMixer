@@ -7,7 +7,9 @@
 <img src='fig/qual_eval.png' width=800>
 
 ## Texture Dissolve
-<img src='fig/texture_dissolve_animal.gif' width=800>
+<img src='fig/texture_dissolve_animal_loop.gif' width=800>
+<img src='fig/texture_dissolve_plant_loop.gif' width=800>
+<img src='fig/texture_dissolve_earth_loop.gif' width=800>
 
 ## Prerequisites
 - Linux
