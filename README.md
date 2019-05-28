@@ -6,6 +6,9 @@
 ## Texture Interpolation (more results are shown in the [paper](https://arxiv.org/pdf/1901.03447.pdf))
 <img src='fig/qual_eval.png' width=800>
 
+## Texture Dissolve
+<img src='fig/texture_dissolve_animal.gif' width=800>
+
 ## Prerequisites
 - Linux
 - NVIDIA GPU + CUDA CuDNN
