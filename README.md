@@ -44,36 +44,27 @@
 ## Applications
 
 ### Texture Interpolation
-- First download testing images from the addresses in the first column in the file `data/test/defect_testing_gt.csv` into `data/test/original_resolution/`.
-  Or put customized images into that directory.
-- Then run
-```
-python test.py -iPath data/test/original_resolution -oPath output/GoogLeNet -holisticDeployPath prototxt/GoogLeNet/holistic/deploy_holistic.prototxt -holisticWeightsPath model/GoogLeNet/weights_holistic.caffemodel -patchDeployPath prototxt/GoogLeNet/patch/deploy_patch.prototxt -patchWeightsPath model/GoogLeNet/weights_patch.caffemodel -gpu 0
-```
-- The final seven defect severity prediction results are saved in the file `output/GoogLeNet/defect_scores_combined.csv`.
-- Testing images are sorted in the descent order according to each defect severity prediction and visualized correspondingly to the file `output/GoogLeNet/defect_scores_combined_*.html`.
 
-## Evaluation
-- We use the cross-class ranking correlation (proposed in Section 3.2 in our [paper](https://arxiv.org/pdf/1612.01635.pdf)) to evaluate the testing results. 
-- Assuming the rows and columns of `data/test/defect_testing_gt.csv` and `output/GoogLeNet/defect_scores_combined.csv` align to each other, run
-```
-python evaluate.py -gtPath data/test/defect_testing_gt.csv -predPath output/GoogLeNet/defect_scores_combined.csv -oPath output/GoogLeNet
-```
-- The evaluation measures are saved in the file `output/GoogLeNet/evaluation.csv`.
+### Texture Dissolve
+
+### Texture Brush
+
+### Animal hybridization
 
 ## Citation
 ```
-@inproceedings{yu2018learning,
-    author = {Yu, Ning and Shen, Xiaohui and Lin, Zhe and Měch, Radomír and Barnes, Connelly},
-    title = {Learning to Detect Multiple Photographic Defects},
-    booktitle = {IEEE Winter Conference on Applications of Computer Vision (WACV)},
-    year = {2018}
+@inproceedings{yu2019texture,
+    author = {Yu, Ning and Barnes, Connelly and Shechtman, Eli and Amirghodsi, Sohrab and Lukáč, Michal},
+    title = {Texture Mixer: A Network for Controllable Synthesis and Interpolation of Texture},
+    booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year = {2019}
 }
 ```
 ## Acknowledgement
 - This research is supported by Adobe Research Funding.
+- We acknowledge the Maryland Advanced Research Computing Center for providing computing resources.
 - We thank to the photographers for licensing photos under Creative Commons or public domain.
-- We express gratitudes to the popular [caffe-googlenet-bn](https://github.com/lim0606/caffe-googlenet-bn) repository as we benefit a lot from their code.
+- We express gratitudes to the [Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) as we benefit a lot from their code.
 
 ## Note
 - It is for non-commercial research purpose only. Adobe has been filing a patent for this work.
