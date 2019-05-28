@@ -3,8 +3,8 @@
 - Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) on controllable texture interpolation and several applications.
 - Contact: Ning Yu (ningyu AT umd DOT edu)
 
-## Texture Interpolation
-<img src='fig/teaser.jpg' width=800>
+## Texture Interpolation (more results are shown in the [paper](https://arxiv.org/pdf/1901.03447.pdf))
+<img src='fig/qual_eval.png' width=800>
 
 ## Prerequisites
 - Linux
