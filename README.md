@@ -61,8 +61,8 @@ python3 run.py \
 --out_dir results/animal_texture/horizontal_interpolation/
 ```
 where
-- `imageL_path`: The left-hand side image for horizontal interpolation
-- `imageR_path`: The rihgt-hand side image for horizontal interpolation
+- `imageL_path`: The left-hand side image for horizontal interpolation.
+- `imageR_path`: The rihgt-hand side image for horizontal interpolation.
 ### Texture Dissolve
 E.g., run
 ```
@@ -80,7 +80,14 @@ python3 run.py \
 --out_dir results/animal_texture/dissolve/
 ```
 where
-- ``
+- `imageStartUL_path`: The upper-left corner image in the starting frame.
+- `imageStartUR_path`: The upper-right corner image in the starting frame.
+- `imageStartBL_path`: The bottom-left corner image in the starting frame.
+- `imageStartBR_path`: The bottom-right corner image in the starting frame.
+- `imageEndUL_path`: The upper-left corner image in the ending frame.
+- `imageEndUR_path`: The upper-right corner image in the ending frame.
+- `imageEndBL_path`: The bottom-left corner image in the ending frame.
+- `imageEndBR_path`: The bottom-right corner image in the ending frame.
 ### Texture Brush
 E.g., run
 ```
@@ -101,6 +108,19 @@ python3 run.py \
 --stroke4_path stroke_fig/R_skeleton.png \
 --out_dir results/animal_texture/brush/
 ```
+where
+- `imageBgUL_path`: The upper-left corner image for the background canvas.
+- `imageBgUR_path`: The upper-right corner image for the background canvas.
+- `imageBgBL_path`: The bottom-left corner image for the background canvas.
+- `imageBgBR_path`: The bottom-right corner image for the background canvas.
+- `imageFgUL_path`: The upper-left corner image for the foreground palatte.
+- `imageFgUR_path`: The upper-right corner image for the foreground palatte.
+- `imageFgBL_path`: The bottom-left corner image for the foreground palatte.
+- `imageFgBR_path`: The bottom-right corner image for the foreground palatte.
+- `stroke1_path`: The trajectory image for the 1st stroke. The stroke pattern is sampled from (3/8, 3/8) portion of the foreground palatte.
+- `stroke2_path`: The trajectory image for the 2nd stroke. The stroke pattern is sampled from (3/8, 7/8) portion of the foreground palatte.
+- `stroke3_path`: The trajectory image for the 3rd stroke. The stroke pattern is sampled from (7/8, 3/8) portion of the foreground palatte.
+- `stroke4_path`: The trajectory image for the 4th stroke. The stroke pattern is sampled from (7/8, 7/8) portion of the foreground palatte.
 ### Animal hybridization
 
 ## Citation
