@@ -136,7 +136,7 @@ python3 run.py \
 where
 - `source_dir`: The directory containing the hole region to be interpolated, two known source texture images adjacent to the hole, and their global Content-Aware Fill (CAF) operation results from Photoshop.
 
-After that, post-process the output hybridization image by aligning (alpha-blending) it with the original image (with hole) in Photoshop, so as to achieve the demo quality shown above. 
+After that, post-process the output hybridization image by aligning (alpha-blending) it with the original image (with hole) in Photoshop, so as to achieve the demo quality as shown above. 
 ## Citation
 ```
 @inproceedings{yu2019texture,
