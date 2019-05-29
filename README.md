@@ -125,7 +125,17 @@ where
 - `stroke3_path`: The trajectory image for the 3rd stroke. The stroke pattern is sampled from the (7/8, 3/8) portion of the foreground palatte.
 - `stroke4_path`: The trajectory image for the 4th stroke. The stroke pattern is sampled from the (7/8, 7/8) portion of the foreground palatte.
 ### Animal hybridization
-
+E.g., run
+```
+python3 run.py \
+--app hybridization \
+--model_path models/animal_texture/network-final.pkl \
+--source_dir hybridization_fig/leoraffe/ \
+--out_dir results/animal_texture/hybridization/leoraffe/
+```
+where
+- `source_dir`: The directory containing the hole region to be interpolated, two known source texture images adjacent to the hole, and their global Adobe Content-Aware Fill (CAF) operation results.
+After that, post-process the output hybridization image by aligning (alpha-blending) it with the original image (with hole) in Photoshop, so as to achieve the demo quality shown above. 
 ## Citation
 ```
 @inproceedings{yu2019texture,
