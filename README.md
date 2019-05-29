@@ -60,6 +60,9 @@ python3 run.py \
 --imageR_path examples/animal_texture/1000_F_109464954_aBfyWSbdZt5PNpUo7hOqDRPWmmvQj3v9_NW_aug00000092.png \
 --out_dir results/animal_texture/horizontal_interpolation/
 ```
+where
+- `imageL_path`: The left-hand side image for horizontal interpolation
+- `imageR_path`: The rihgt-hand side image for horizontal interpolation
 ### Texture Dissolve
 E.g., run
 ```
@@ -76,6 +79,8 @@ python3 run.py \
 --imageEndBR_path examples/animal_texture/1000_F_79496236_8mxTSHy5OilHnJaAxWcw2dwC9SoBLmDK_NW_aug00000057.png \
 --out_dir results/animal_texture/dissolve/
 ```
+where
+- ``
 ### Texture Brush
 E.g., run
 ```
