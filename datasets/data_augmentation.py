@@ -33,26 +33,6 @@ def transform(im0, height, width, random_seed, transpose):
         im1 = np.transpose(im1, [2, 0, 1])
     return im1
 
-def histMatch(path, path_ref, random_seed):
-    np.random.seed(random_seed)
-    alpha = np.random.uniform()
-    #if np.random.uniform(high=0.5) > alpha:
-    #    alpha = 1.0 - alpha
-    image = skimage.io.imread(path)
-    idx1 = path.rfind('/')
-    idx2 = path.rfind('.')
-    path0 = path[:idx1]
-    name1 = path[idx1+1:idx2]
-    idx1 = path_ref.rfind('/')
-    idx2 = path_ref.rfind('.')
-    name2 = path_ref[idx1+1:idx2]
-    if name1 == name2:
-        return image
-    path_histMatch = '%s_hist_match/%s_matchTo_%s.png' % (path0, name1, name2)
-    image_histMatch = skimage.io.imread(path_histMatch)
-    image = (1.0-alpha)*image + alpha*image_histMatch
-    return image.astype(np.uint8)
-
 def render(im0, height, width, random_seed):
     np.random.seed(random_seed)
 
