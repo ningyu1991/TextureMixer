@@ -11,8 +11,6 @@ import math
 import argparse
 
 def get_image(path, path_ref, height, width, random_seed, transpose=True):
-    #if 'earth' in path:
-    #    image = histMatch(path, path_ref, random_seed)
     image = skimage.io.imread(path).astype(np.uint8)
     image = render(image, height, width, random_seed+1)
     image = transform(image, height, width, random_seed+2, transpose=transpose)
@@ -169,8 +167,7 @@ def main():
     num_images = len(data)
     num_repeats = args.num_aug // num_images + 1
 
-    pivot = 0
-    for (num, iFile) in enumerate(data[pivot:]):
+    for (num, iFile) in enumerate(data):
         idx1 = iFile.rfind('/')
         idx2 = iFile.find('.png')
         name = iFile[idx1+1:idx2]
@@ -178,9 +175,9 @@ def main():
             oFile = '%s/%s_aug%08d.png' % (args.oPath, name, count)
             if not os.path.isfile(oFile):
                 refFile = np.random.choice(data)
-                im_crop = get_image(iFile, refFile, crop_height, crop_width, random_seed=count*100000+(num+pivot)*10, transpose=False)
+                im_crop = get_image(iFile, refFile, crop_height, crop_width, random_seed=count*100000+num*10, transpose=False)
                 skimage.io.imsave(oFile, im_crop)
-            print('%d:%d, %d:%d' % (num_images, num+pivot, num_repeats, count), end='\r')
+            print('%d:%d, %d:%d' % (num_images, num, num_repeats, count), end='\r')
 
 if __name__ == '__main__':
     main()
