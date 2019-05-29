@@ -77,7 +77,25 @@ python3 run.py \
 --out_dir results/animal_texture/dissolve/
 ```
 ### Texture Brush
-
+E.g., run
+```
+python3 run.py \
+--app brush \
+--model_path models/animal_texture/network-final.pkl \
+--imageBgUL_path examples/animal_texture/1000_F_23745067_w0GkcAIQG2C4hxOelI1aQYZglEXggGRS_NW_aug00000000.png \
+--imageBgUR_path examples/animal_texture/1000_F_44327602_E6wl8FNihQON8c704fE5DEY2LOJPQQ1V_NW_aug00000018.png \
+--imageBgBL_path examples/animal_texture/1000_F_66218716_rxcsXWQzYpIWVB8a09ZcuNzE7qAJ3HEk_NW_aug00000098.png \
+--imageBgBR_path examples/animal_texture/1000_F_40846588_APKTS3BpiRvR1nvUx0FRa7qjjR788zt8_NW_aug00000001.png \
+--imageFgUL_path examples/animal_texture/1000_F_40300952_3dgaCtcLCrhzU0r6HEfnwr7nujDWXbSQ_NW_aug00000029.png \
+--imageFgUR_path examples/animal_texture/1000_F_44119648_3vskjRwVc4NVT1Pf0l3RlvIFUemo8TM1_NW_aug00000001.png \
+--imageFgBL_path examples/animal_texture/1000_F_70708482_2N8lknTCJg2Q8JQeomFYaFttxId9rulj_NW_aug00000070.png \
+--imageFgBR_path examples/animal_texture/1000_F_79496236_8mxTSHy5OilHnJaAxWcw2dwC9SoBLmDK_NW_aug00000057.png \
+--stroke1_path stroke_fig/C_skeleton.png \
+--stroke2_path stroke_fig/V_skeleton.png \
+--stroke3_path stroke_fig/P_skeleton.png \
+--stroke4_path stroke_fig/R_skeleton.png \
+--out_dir results/animal_texture/brush/
+```
 ### Animal hybridization
 
 ## Citation
