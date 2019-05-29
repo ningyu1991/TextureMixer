@@ -37,7 +37,10 @@
   - `datasets/animal_texture/`
   - `datasets/earth_texture/`
   - `datasets/plant_texture/`
-  - Modify `datasets/data_augmentation.py` for data augmentation: color histogram matching (only for earth texture) --> geometric transformation --> 128x128 cropping. 
+  - Run, e.g., the following command for data augmentation.
+    ```
+    python3 data_augmentation.py --iPath animal_texture/test_resize512/ --oPath animal_texture_test_aug/ --num_aug 10000
+    ```
   - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for our dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
 - For convenience, the prepared testing datasets can be downloaded from:
   - [Animal texture](https://drive.google.com/file/d/15HGHJuEMMbaUPMyH23iQrru0teH1gJmw/view?usp=sharing)
@@ -54,7 +57,7 @@
 
 ## Applications
 ### Texture Interpolation
-E.g., run
+Run, e.g.,
 ```
 python3 run.py \
 --app interpolation \
@@ -67,7 +70,7 @@ where
 - `imageL_path`: The left-hand side image for horizontal interpolation.
 - `imageR_path`: The right-hand side image for horizontal interpolation.
 ### Texture Dissolve
-E.g., run
+Run, e.g.,
 ```
 python3 run.py \
 --app dissolve \
@@ -92,7 +95,7 @@ where
 - `imageEndBL_path`: The bottom-left corner image in the ending frame.
 - `imageEndBR_path`: The bottom-right corner image in the ending frame.
 ### Texture Brush
-E.g., run
+Run, e.g.,
 ```
 python3 run.py \
 --app brush \
@@ -125,7 +128,7 @@ where
 - `stroke3_path`: The trajectory image for the 3rd stroke. The stroke pattern is sampled from the (7/8, 3/8) portion of the foreground palatte.
 - `stroke4_path`: The trajectory image for the 4th stroke. The stroke pattern is sampled from the (7/8, 7/8) portion of the foreground palatte.
 ### Animal hybridization
-E.g., run
+Run, e.g.,
 ```
 python3 run.py \
 --app hybridization \
