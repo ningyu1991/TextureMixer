@@ -1,6 +1,6 @@
 # TextureMixer
 
-<img src='fig/palette_brush_teaser.png' width=800>
+<img src='fig/palette_brush_teaser.png' width=400> <img src='fig/pipeline.png' width=400>
 
 - Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) on controllable texture interpolation and several applications.
 - Contact: Ning Yu (ningyu AT umd DOT edu)
