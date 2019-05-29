@@ -346,31 +346,38 @@ def multi_layer_cos(src1, center, src2, return_per_sample=False):
 # Generate MP4 video of random interpolations using a previously trained network.
 # To run, uncomment the appropriate line in config.py and launch train.py.
 
-def generate_spatiotemporal_interpolation_video(model_path, out_dir, changes=10, scale_h=8, scale_w=8, image_shrink=1, image_zoom=1, duration_sec=60.0, repeats=False, mp4=None, mp4_fps=30, mp4_codec='libx265', mp4_bitrate='16M', minibatch_size=1):
+def texture_dissolve_video(model_path, imageStartUL_path, imageStartUR_path, imageStartBL_path, imageStartBR_path, imageEndUL_path, imageEndUR_path, imageEndBL_path, imageEndBR_path, out_dir, duration_sec=4.0, scale_h=8, scale_w=8, image_shrink=1, image_zoom=1, mp4=None, mp4_fps=30, mp4_codec='libx265', mp4_bitrate='16M', minibatch_size=1):
+    changes = 1
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # Load model
     E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
     Gs_fcn = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h, scale_w=scale_w, **config.G)
 
-    print('Generating latent vectors...')
-
-    # random start and end points
-    val_set = dataset.load_dataset(data_dir=config.data_dir, verbose=True, **config.val_set)
-    grid_size, grid_size_interp, grid_reals, grid_labels, grid_zg_latents, grid_zl_latents = setup_snapshot_image_grid(E_zg, E_zl, G, val_set, [-1,1], [15,8], **config.grid)
-    
-    #duration_sec = 2.0 / float(mp4_fps)
-    changes = 1
-    #heads = [62, 100, 77, 103]; tails = [69, 84, 103, 107] # earth
-    #heads = [94, 84, 33, 90]; tails =  [76, 16, 109, 42]# animal
-    heads = [1, 26, 45, 81]; tails =  [66, 42, 117, 16]# animal_better
-    #heads = [116, 8, 52, 28]; tails =  [94, 84, 33, 90]# plant
-    grid_reals_ul = np.concatenate((grid_reals[heads[0]:heads[0]+1,:,:,:], grid_reals[tails[0]:tails[0]+1,:,:,:]), axis=0)
-    grid_reals_ur = np.concatenate((grid_reals[heads[1]:heads[1]+1,:,:,:], grid_reals[tails[1]:tails[1]+1,:,:,:]), axis=0)
-    grid_reals_bl = np.concatenate((grid_reals[heads[2]:heads[2]+1,:,:,:], grid_reals[tails[2]:tails[2]+1,:,:,:]), axis=0)
-    grid_reals_br = np.concatenate((grid_reals[heads[3]:heads[3]+1,:,:,:], grid_reals[tails[3]:tails[3]+1,:,:,:]), axis=0)
+    # Load dataset
+    grid_reals_ul = np.zeros([2]+Es_zl.input_shape[1:]).astype(np.float32)
+    imageStartUL = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageStartUL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_ul[0,:,:,:] = imageStartUL
+    imageEndUL = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageEndUL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_ul[1,:,:,:] = imageEndUL
+    grid_reals_ur = np.zeros([2]+Es_zl.input_shape[1:]).astype(np.float32)
+    imageStartUR = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageStartUR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_ur[0,:,:,:] = imageStartUR
+    imageEndUR = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageEndUR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_ur[1,:,:,:] = imageEndUR
+    grid_reals_bl = np.zeros([2]+Es_zl.input_shape[1:]).astype(np.float32)
+    imageStartBL = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageStartBL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_bl[0,:,:,:] = imageStartBL
+    imageEndBL = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageEndBL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_bl[1,:,:,:] = imageEndBL
+    grid_reals_br = np.zeros([2]+Es_zl.input_shape[1:]).astype(np.float32)
+    imageStartBR = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageStartBR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_br[0,:,:,:] = imageStartBR
+    imageEndBR = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageEndBR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    grid_reals_br[1,:,:,:] = imageEndBR
 
     # encode zg latent tensors
+    print('zg encoding...')
     zg_mu_ul, zg_log_sigma_ul = Es_zg.run(grid_reals_ul, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zg_mu_ur, zg_log_sigma_ur = Es_zg.run(grid_reals_ur, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zg_mu_bl, zg_log_sigma_bl = Es_zg.run(grid_reals_bl, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
@@ -379,7 +386,9 @@ def generate_spatiotemporal_interpolation_video(model_path, out_dir, changes=10,
     zg_latents_ur = np.array(zg_mu_ur)
     zg_latents_bl = np.array(zg_mu_bl)
     zg_latents_br = np.array(zg_mu_br)
+    
     # encode zl latent tensors
+    print('zl encoding...')
     zl_mu_ul, zl_log_sigma_ul = Es_zl.run(grid_reals_ul, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zl_mu_ur, zl_log_sigma_ur = Es_zl.run(grid_reals_ur, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zl_mu_bl, zl_log_sigma_bl = Es_zl.run(grid_reals_bl, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
@@ -531,7 +540,7 @@ def generate_spatiotemporal_interpolation_video(model_path, out_dir, changes=10,
 
     # Generate video.
     import moviepy.editor # pip install moviepy
-    moviepy.editor.VideoClip(make_frame, duration=duration_sec).write_videofile(os.path.join(out_dir, 'spatiotemporal_interpolation.mp4'), fps=mp4_fps, codec='libx264', bitrate=mp4_bitrate)
+    moviepy.editor.VideoClip(make_frame, duration=duration_sec).write_videofile(os.path.join(out_dir, 'texture_dissolve.mp4'), fps=mp4_fps, codec='libx264', bitrate=mp4_bitrate)
 
 def im2graph(im):
     h = im.shape[0]; w = im.shape[1]
@@ -1298,8 +1307,9 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
 # Generate horizontal interpolation over dataset.
 # To run, uncomment the appropriate line in config.py and launch train.py.
 
-def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, minibatch_size, scale_h, scale_w):
+def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scale_h=3, scale_w=8, minibatch_size=1):
     num_images = 2
+    if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # Load model
     E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
@@ -1446,11 +1456,10 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, mini
         interp_images_out[mb_begin:mb_end,:,:,:] = interp_images_out_mb[:,:,scale_h//2*G.output_shape[2]:(scale_h//2+1)*G.output_shape[2],:]
 
     print('Saving interpolation and cropping results...')
-    if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # save interpolation results
     idx1 = imageL_path.rfind('/')
     idx2 = imageR_path.rfind('/')
-    path_interp = '%s/%s-blending-%s.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
+    path_interp = '%s/%s-interplatingTo-%s.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
     IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
     IMAGE_interp.save(path_interp, 'png')

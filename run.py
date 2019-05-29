@@ -606,12 +606,24 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--app', type=str, default=' ')
     parser.add_argument('--model_path', type=str, default=' ')
+    parser.add_argument('--out_dir', type=str, default=' ')
     parser.add_argument('--imageL_path', type=str, default=' ')
     parser.add_argument('--imageR_path', type=str, default=' ')
-    parser.add_argument('--out_dir', type=str, default=' ')
+    parser.add_argument('--imageStartUL_path', type=str, default=' ')
+    parser.add_argument('--imageStartUR_path', type=str, default=' ')
+    parser.add_argument('--imageStartBL_path', type=str, default=' ')
+    parser.add_argument('--imageStartBR_path', type=str, default=' ')
+    parser.add_argument('--imageEndUL_path', type=str, default=' ')
+    parser.add_argument('--imageEndUR_path', type=str, default=' ')
+    parser.add_argument('--imageEndBL_path', type=str, default=' ')
+    parser.add_argument('--imageEndBR_path', type=str, default=' ')
     args = parser.parse_args()
     if args.app == 'interpolation':
-        config.train = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir, minibatch_size=32, scale_h=3, scale_w=8)        
+        assert args.model_path != ' ' and args.imageL_path != ' ' and args.imageR_path != ' ' and args.out_dir != ' '
+        config.train = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir)        
+    elif args.app == 'dissolve':
+        assert args.model_path != ' ' and args.imageStartUL_path != ' ' and args.imageStartUR_path != ' ' and args.imageStartBL_path != ' ' and args.imageStartBR_path != ' ' and args.imageEndUL_path != ' ' and args.imageEndUR_path != ' ' and args.imageEndBL_path != ' ' and args.imageEndBR_path != ' ' and args.out_dir != ' '
+        config.train = config.EasyDict(func='util_scripts.texture_dissolve_video', model_path=args.model_path, imageStartUL_path=args.imageStartUL_path, imageStartUR_path=args.imageStartUR_path, imageStartBL_path=args.imageStartBL_path, imageStartBR_path=args.imageStartBR_path, imageEndUL_path=args.imageEndUL_path, imageEndUR_path=args.imageEndUR_path, imageEndBL_path=args.imageEndBL_path, imageEndBR_path=args.imageEndBR_path, out_dir=args.out_dir)
     tfutil.call_func_by_name(**config.train)
 
 #----------------------------------------------------------------------------

@@ -40,7 +40,7 @@ train_size = 128
 
 # Training and validation datasets
 #training_data = 'animal_texture_train_aug_with_labels'; val_data = 'animal_texture_test_aug_with_labels'
-#training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
+training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
 #training_data = 'plant_texture_train_aug_with_labels'; val_data = 'plant_texture_test_aug_with_labels'
 
 training_set = EasyDict(tfrecord_dir=training_data);
@@ -120,13 +120,13 @@ desc += '-fp32'; sched.max_minibatch_per_gpu = {256: 16, 512: 8, 1024: 4}
 #image1_path = '../../codes/adobe_stock_datasets/plant_textures_new/images/test_resize512_aug_crop_128/1000_F_98832647_RaDsgFfp78ONq0RnIRYG2S8WdwiyNFPf_NW_aug00000033.png'
 #image2_path = '../../codes/adobe_stock_datasets/plant_textures_new/images/test_resize512_aug_crop_128/1000_F_99674846_IpnHI1gidsXJWLvOSzuizVwhAGnlWWHf_NW_aug00000084.png'
 #out_dir = 'results/plant/horizontal_interpolation_dummy'
-#train = EasyDict(func='util_scripts.horizontal_interpolation', model_path=model_path, image1_path=image1_path, image2_path=image2_path, out_dir=out_dir, minibatch_size=32*num_gpus, scale_h=3, scale_w=8)
+#train = EasyDict(func='util_scripts.horizontal_interpolation', model_path=model_path, image1_path=image1_path, image2_path=image2_path, out_dir=out_dir)
 
 '''
 env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
 model_path = 'models/animal_texture/network-final.pkl'
 out_dir = 'results/animal/spatiotemporal_interpolation_video_dummy'
-train = EasyDict(func='util_scripts.generate_spatiotemporal_interpolation_video', model_path=model_path, out_dir=out_dir, changes=1, scale_h=8, scale_w=8, duration_sec=4.0, repeats=False)
+train = EasyDict(func='util_scripts.texture_dissolve_video', model_path=model_path, out_dir=out_dir)
 '''
 '''
 env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
