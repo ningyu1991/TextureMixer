@@ -62,7 +62,7 @@ python3 run.py \
 ```
 where
 - `imageL_path`: The left-hand side image for horizontal interpolation.
-- `imageR_path`: The rihgt-hand side image for horizontal interpolation.
+- `imageR_path`: The right-hand side image for horizontal interpolation.
 ### Texture Dissolve
 E.g., run
 ```
@@ -117,10 +117,10 @@ where
 - `imageFgUR_path`: The upper-right corner image for the foreground palatte.
 - `imageFgBL_path`: The bottom-left corner image for the foreground palatte.
 - `imageFgBR_path`: The bottom-right corner image for the foreground palatte.
-- `stroke1_path`: The trajectory image for the 1st stroke. The stroke pattern is sampled from (3/8, 3/8) portion of the foreground palatte.
-- `stroke2_path`: The trajectory image for the 2nd stroke. The stroke pattern is sampled from (3/8, 7/8) portion of the foreground palatte.
-- `stroke3_path`: The trajectory image for the 3rd stroke. The stroke pattern is sampled from (7/8, 3/8) portion of the foreground palatte.
-- `stroke4_path`: The trajectory image for the 4th stroke. The stroke pattern is sampled from (7/8, 7/8) portion of the foreground palatte.
+- `stroke1_path`: The trajectory image for the 1st stroke. The stroke pattern is sampled from the (3/8, 3/8) portion of the foreground palatte.
+- `stroke2_path`: The trajectory image for the 2nd stroke. The stroke pattern is sampled from the (3/8, 7/8) portion of the foreground palatte.
+- `stroke3_path`: The trajectory image for the 3rd stroke. The stroke pattern is sampled from the (7/8, 3/8) portion of the foreground palatte.
+- `stroke4_path`: The trajectory image for the 4th stroke. The stroke pattern is sampled from the (7/8, 7/8) portion of the foreground palatte.
 ### Animal hybridization
 
 ## Citation
