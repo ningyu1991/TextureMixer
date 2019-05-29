@@ -961,54 +961,59 @@ def im2angle(im):
     angle = np.arctan2(-direction[0], direction[1]) / math.pi * 180.0
     return angle
 
-def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enabled=False, weight_mode='horizontal_linear', sig_div=10.0, minibatch_size=8):
+def hybridization_CAF(model_path, source_dir, out_dir, rotation_enabled=True, train_size=128, weight_mode='horizontal_linear', sig_div=4.0, minibatch_size=1):
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # read sources
-    sample1_path = '%s/sample1.png' % in_dir
-    sample2_path = '%s/sample2.png' % in_dir
-    mask_path = '%s/interp_region.png' % in_dir
+    print('reading sources...')
+    sample1_path = '%s/sample1.png' % source_dir
+    sample2_path = '%s/sample2.png' % source_dir
+    mask_path = '%s/interp_region.png' % source_dir
     sample1, sample1_mask = path2tensors(sample1_path, sample=True)
     sample2, sample2_mask = path2tensors(sample2_path, sample=True)
     interp_mask = path2tensors(mask_path, sample=False)
 
     # read CAF sources
-    sample1_CAF_path = '%s/sample1_CAF.png' % in_dir
-    sample2_CAF_path = '%s/sample2_CAF.png' % in_dir
+    print('reading CAF sources...')
+    sample1_CAF_path = '%s/sample1_CAF.png' % source_dir
+    sample2_CAF_path = '%s/sample2_CAF.png' % source_dir
     sample1_CAF_fig = skimage.img_as_float(np.array(PIL.Image.open(sample1_CAF_path)))
     sample2_CAF_fig = skimage.img_as_float(np.array(PIL.Image.open(sample2_CAF_path)))
 
     # determine the boundary curve average direction and then rotate all the images that favor for horizontal interpolation
     if rotation_enabled:
-        sample1_mask_dilated = binary_dilation(sample1_mask * (1.0-interp_mask)).astype(sample1_mask.dtype)
-        sample1_boundary = sample1_mask_dilated * interp_mask
-        y, x = np.where(sample1_boundary>0)
-        y_min = np.amin(y); y_max = np.amax(y); x_min = np.amin(x); x_max = np.amax(x)
-        sample1_boundary = sample1_boundary[y_min-1:y_max+2, x_min-1:x_max+2]
-        sample1_angle = im2angle(sample1_boundary)
-        sample2_mask_dilated = binary_dilation(sample2_mask * (1.0-interp_mask)).astype(sample2_mask.dtype)
-        sample2_boundary = sample2_mask_dilated * interp_mask
-        y, x = np.where(sample2_boundary>0)
-        y_min = np.amin(y); y_max = np.amax(y); x_min = np.amin(x); x_max = np.amax(x)
-        sample2_boundary = sample2_boundary[y_min-1:y_max+2, x_min-1:x_max+2]
-        sample2_angle = im2angle(sample2_boundary)
-        angle = (sample1_angle + sample2_angle) / 2.0
-        print('angle')
-        print(angle)
-        sample1_mask = skimage.transform.rotate(sample1_mask, -90.0-angle)
-        sample1_mask = (sample1_mask>0.5).astype(np.float32)
-        sample2_mask = skimage.transform.rotate(sample2_mask, -90.0-angle)
-        sample2_mask = (sample2_mask>0.5).astype(np.float32)
-        interp_mask = skimage.transform.rotate(interp_mask, -90.0-angle)
-        interp_mask = (interp_mask>0.5).astype(np.float32)
-        sample1_CAF_fig = skimage.transform.rotate(sample1_CAF_fig, -90.0-angle)
-        sample1_CAF_fig[sample1_CAF_fig<0.0] = 0.0; sample1_CAF_fig[sample1_CAF_fig>1.0] = 1.0
-        sample2_CAF_fig = skimage.transform.rotate(sample2_CAF_fig, -90.0-angle)
-        sample2_CAF_fig[sample2_CAF_fig<0.0] = 0.0; sample2_CAF_fig[sample2_CAF_fig>1.0] = 1.0
+        try:
+            sample1_mask_dilated = binary_dilation(sample1_mask * (1.0-interp_mask)).astype(sample1_mask.dtype)
+            sample1_boundary = sample1_mask_dilated * interp_mask
+            y, x = np.where(sample1_boundary>0)
+            y_min = np.amin(y); y_max = np.amax(y); x_min = np.amin(x); x_max = np.amax(x)
+            sample1_boundary = sample1_boundary[y_min-1:y_max+2, x_min-1:x_max+2]
+            sample1_angle = im2angle(sample1_boundary)
+            sample2_mask_dilated = binary_dilation(sample2_mask * (1.0-interp_mask)).astype(sample2_mask.dtype)
+            sample2_boundary = sample2_mask_dilated * interp_mask
+            y, x = np.where(sample2_boundary>0)
+            y_min = np.amin(y); y_max = np.amax(y); x_min = np.amin(x); x_max = np.amax(x)
+            sample2_boundary = sample2_boundary[y_min-1:y_max+2, x_min-1:x_max+2]
+            sample2_angle = im2angle(sample2_boundary)
+            angle = (sample1_angle + sample2_angle) / 2.0
+            sample1_mask = skimage.transform.rotate(sample1_mask, -90.0-angle)
+            sample1_mask = (sample1_mask>0.5).astype(np.float32)
+            sample2_mask = skimage.transform.rotate(sample2_mask, -90.0-angle)
+            sample2_mask = (sample2_mask>0.5).astype(np.float32)
+            interp_mask = skimage.transform.rotate(interp_mask, -90.0-angle)
+            interp_mask = (interp_mask>0.5).astype(np.float32)
+            sample1_CAF_fig = skimage.transform.rotate(sample1_CAF_fig, -90.0-angle)
+            sample1_CAF_fig[sample1_CAF_fig<0.0] = 0.0; sample1_CAF_fig[sample1_CAF_fig>1.0] = 1.0
+            sample2_CAF_fig = skimage.transform.rotate(sample2_CAF_fig, -90.0-angle)
+            sample2_CAF_fig[sample2_CAF_fig<0.0] = 0.0; sample2_CAF_fig[sample2_CAF_fig>1.0] = 1.0
+            rotation_failure = False
+        except:
+            rotation_failure = True
 
     # rasterize
-    sample1_CAF = np.transpose(misc.adjust_dynamic_range(sample1_CAF_fig, [0,1], [-1,1]), axes=[2,0,1])
-    sample2_CAF = np.transpose(misc.adjust_dynamic_range(sample2_CAF_fig, [0,1], [-1,1]), axes=[2,0,1])
+    print('rasterizing...')
+    sample1_CAF = np.transpose(misc.adjust_dynamic_range(sample1_CAF_fig[:,:,:3], [0,1], [-1,1]), axes=[2,0,1])
+    sample2_CAF = np.transpose(misc.adjust_dynamic_range(sample2_CAF_fig[:,:,:3], [0,1], [-1,1]), axes=[2,0,1])
     interp_mask_grid, sample1_mask_grid, sample2_mask_grid = rasterize_mask(interp_mask, sample1_mask, sample2_mask, size=train_size)
     sample1_grid = np.dstack([(sample1_CAF_fig*255.0).astype(np.uint8), (sample1_mask_grid*255.0).astype(np.uint8)])
     sample1_interp_grid = np.dstack([(sample1_CAF_fig*255.0).astype(np.uint8), (interp_mask_grid*255.0).astype(np.uint8)])
@@ -1016,6 +1021,7 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
     sample2_interp_grid = np.dstack([(sample2_CAF_fig*255.0).astype(np.uint8), (interp_mask_grid*255.0).astype(np.uint8)])
 
     # pick up bounding source crops
+    print('picking up source crops at boundaries...')
     RBF_field_weight = False
     horizontal_linear_weight = True
 
@@ -1189,12 +1195,13 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
         weights = np.expand_dims(weights, axis=1)
         weights = np.tile(weights, [1, Gs_fcn.input_shapes[0][1], 1, 1])
     
-    print('Generating latent vectors...')
     # encode zg
+    print('zg encoding...')
     zg_mu, zg_log_sigma = Es_zg.run(crops, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zg_latents = np.array(zg_mu)
 
     # encode zl
+    print('zl encoding...')
     zl_mu, zl_log_sigma = Es_zl.run(crops, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zl_latents = np.array(zl_mu)
 
@@ -1249,6 +1256,7 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
     permutation_matrix_w_0 = np.concatenate(permutation_matrix_w_0, axis=0)
     permutation_matrix_h_0 = np.concatenate(permutation_matrix_h_0, axis=0)
 
+    print('interpolating...')
     # interpolate zg
     interp_zg_latents = np.tile(zg_latents, [1, 1, Gs_fcn.input_shapes[0][2], Gs_fcn.input_shapes[0][3]])
     interp_zg_latents = np.sum(interp_zg_latents * weights, axis=0, keepdims=True)
@@ -1264,7 +1272,7 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
     # generate interpolated image
     interp = Gs_fcn.run(interp_zg_latents, interp_zl_latents, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     interp = misc.adjust_dynamic_range(np.transpose(np.squeeze(interp), [1,2,0]), [-1,1], [0,255]).astype(np.uint8)
-    image = np.zeros((sample1.shape[1], sample1.shape[2], 4)).astype(np.uint8) * 255
+    image = np.ones((sample1.shape[1], sample1.shape[2], 4)).astype(np.uint8) * 255
     image[ul_row:ul_row+train_size*scale_h, ul_col:ul_col+train_size*scale_w, :3] = np.array(interp)
     image[:,:,3] = interp_mask_grid.astype(np.uint8) * 255
     overlap_raw = np.ones((sample1.shape[1], sample1.shape[2], 3)).astype(np.uint8).flatten() * 255
@@ -1277,12 +1285,13 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
     overlap[np.dstack([sample2_mask, sample2_mask, sample2_mask]).flatten()>0] = overlap_raw.flatten()[np.dstack([sample2_mask, sample2_mask, sample2_mask]).flatten()>0]
     overlap[np.dstack([interp_mask, interp_mask, interp_mask]).flatten()>0] = overlap_raw.flatten()[np.dstack([interp_mask, interp_mask, interp_mask]).flatten()>0]
     overlap = np.reshape(overlap, overlap_raw.shape)
-    PIL.Image.fromarray(overlap, 'RGB').save('%s/overlap.png' % out_dir, 'png')
 
-    if rotation_enabled:
+    if rotation_enabled and not rotation_failure:
         overlap_rotate = (skimage.transform.rotate(overlap/255.0, 90.0+angle) * 255.0).astype(np.uint8)
         overlap_rotate[overlap_rotate<0] = 0; overlap_rotate[overlap_rotate>255] = 255
-        PIL.Image.fromarray(overlap_rotate, 'RGB').save('%s/overlap.png' % out_dir, 'png')
+        PIL.Image.fromarray(overlap_rotate, 'RGB').save('%s/hybridization.png' % out_dir, 'png')
+    else:
+        PIL.Image.fromarray(overlap, 'RGB').save('%s/hybridization.png' % out_dir, 'png')
 
 #----------------------------------------------------------------------------
 # Generate horizontal interpolation over dataset.
@@ -1316,7 +1325,7 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     reals_orig = reals_orig[:num_images,:,:,:]; enc_zl_mu = enc_zl_mu[:num_images,:,:,:]; enc_zl_log_sigma = enc_zl_log_sigma[:num_images,:,:,:]
 
     # generating
-    print('Interpolating...')
+    print('interpolating...')
     interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3]))
     for mb_begin in range(0, num_images, minibatch_size):
         mb_end = min(mb_begin + minibatch_size, num_images)

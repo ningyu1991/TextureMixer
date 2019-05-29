@@ -600,7 +600,6 @@ if __name__ == "__main__":
     print('Initializing TensorFlow...')
     os.environ.update(config.env)
     tfutil.init_tf(config.tf_config)
-    print('Running %s()...' % config.train['func'])
     config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
 
     parser = argparse.ArgumentParser()
@@ -632,6 +631,9 @@ if __name__ == "__main__":
     parser.add_argument('--stroke2_path', type=str, default=' ') # The trajectory image for the 2nd stroke. The stroke pattern is sampled from the [3/8, 7/8] portion of the foreground palatte
     parser.add_argument('--stroke3_path', type=str, default=' ') # The trajectory image for the 3rd stroke. The stroke pattern is sampled from the [7/8, 3/8] portion of the foreground palatte
     parser.add_argument('--stroke4_path', type=str, default=' ') # The trajectory image for the 4th stroke. The stroke pattern is sampled from the [7/8, 7/8] portion of the foreground palatte
+    #------------------- texture brush arguments -------------------
+    parser.add_argument('--source_dir', type=str, default=' ') # The directory containing the hole region to be interpolated, two known source texture images adjacent to the hole, and their global Adobe Content-Aware Fill (CAF) operation results
+
     args = parser.parse_args()
     if args.app == 'interpolation':
         assert args.model_path != ' ' and args.imageL_path != ' ' and args.imageR_path != ' ' and args.out_dir != ' '
@@ -642,6 +644,9 @@ if __name__ == "__main__":
     elif args.app == 'brush':
         assert args.model_path != ' ' and args.imageBgUL_path != ' ' and args.imageBgUR_path != ' ' and args.imageBgBL_path != ' ' and args.imageBgBR_path != ' ' and args.imageFgUL_path != ' ' and args.imageFgUR_path != ' ' and args.imageFgBL_path != ' ' and args.imageFgBR_path != ' ' and args.stroke1_path != ' ' and args.stroke2_path != ' ' and args.stroke3_path != ' ' and args.stroke4_path != ' ' and args.out_dir != ' '
         app = config.EasyDict(func='util_scripts.texture_brush_video', model_path=args.model_path, imageBgUL_path=args.imageBgUL_path, imageBgUR_path=args.imageBgUR_path, imageBgBL_path=args.imageBgBL_path, imageBgBR_path=args.imageBgBR_path, imageFgUL_path=args.imageFgUL_path, imageFgUR_path=args.imageFgUR_path, imageFgBL_path=args.imageFgBL_path, imageFgBR_path=args.imageFgBR_path, stroke1_path=args.stroke1_path, stroke2_path=args.stroke2_path, stroke3_path=args.stroke3_path, stroke4_path=args.stroke4_path, out_dir=args.out_dir)
+    elif args.app == 'hybridization':
+        assert args.model_path != ' ' and args.source_dir != ' ' and args.out_dir != ' '
+        app = config.EasyDict(func='util_scripts.hybridization_CAF', model_path=args.model_path, source_dir=args.source_dir, out_dir=args.out_dir)
     tfutil.call_func_by_name(**app)
 
 #----------------------------------------------------------------------------
