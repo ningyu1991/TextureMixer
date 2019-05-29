@@ -18,6 +18,8 @@ import misc
 from collections import OrderedDict
 from itertools import chain
 
+import argparse
+
 #----------------------------------------------------------------------------
 # Choose the size and contents of the image snapshot grids that are exported
 # periodically during training.
@@ -599,7 +601,17 @@ if __name__ == "__main__":
     os.environ.update(config.env)
     tfutil.init_tf(config.tf_config)
     print('Running %s()...' % config.train['func'])
+    config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--app', type=str, default=' ')
+    parser.add_argument('--model_path', type=str, default=' ')
+    parser.add_argument('--imageL_path', type=str, default=' ')
+    parser.add_argument('--imageR_path', type=str, default=' ')
+    parser.add_argument('--out_dir', type=str, default=' ')
+    args = parser.parse_args()
+    if args.app == 'interpolation':
+        config.train = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir, minibatch_size=32, scale_h=3, scale_w=8)        
     tfutil.call_func_by_name(**config.train)
-    print('Exiting...')
 
 #----------------------------------------------------------------------------

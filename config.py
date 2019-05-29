@@ -108,23 +108,29 @@ desc += '-preset-v2-8gpus'; num_gpus = 8; sched.minibatch_base = 64; sched.lrate
 desc += '-fp32'; sched.max_minibatch_per_gpu = {256: 16, 512: 8, 1024: 4}
 
 #----------------------------------------------------------------------------
+
+#env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
+#model_path = 'models/animal_texture/network-final.pkl'
+#image1_path = '../../codes/adobe_stock_datasets/animal_textures_new/images/test_resize512_aug_crop_128/1000_F_99107656_XvbvoVVRintE5tmuh1MkdXqs8rkzoahB_NW_aug00000091.png'
+#image2_path = '../../codes/adobe_stock_datasets/animal_textures_new/images/test_resize512_aug_crop_128/1000_F_87614886_hTyVkR2XzAJS2qRjmks6IQEAmuAzsuzP_NW_aug00000062.png'
+#model_path = 'models/earth_texture/network-final.pkl'
+#image1_path = '../../codes/flickr_datasets/earth_textures_new/images/test_resize512_aug_crop_128/farm9_8482_8210343099_50e43a65aa_o_aug00000007.png'
+#image2_path = '../../codes/flickr_datasets/earth_textures_new/images/test_resize512_aug_crop_128/farm9_8888_17781737673_79743c6c53_o_aug00000102.png'
+#model_path = 'models/plant_texture/network-final.pkl'
+#image1_path = '../../codes/adobe_stock_datasets/plant_textures_new/images/test_resize512_aug_crop_128/1000_F_98832647_RaDsgFfp78ONq0RnIRYG2S8WdwiyNFPf_NW_aug00000033.png'
+#image2_path = '../../codes/adobe_stock_datasets/plant_textures_new/images/test_resize512_aug_crop_128/1000_F_99674846_IpnHI1gidsXJWLvOSzuizVwhAGnlWWHf_NW_aug00000084.png'
+#out_dir = 'results/plant/horizontal_interpolation_dummy'
+#train = EasyDict(func='util_scripts.horizontal_interpolation', model_path=model_path, image1_path=image1_path, image2_path=image2_path, out_dir=out_dir, minibatch_size=32*num_gpus, scale_h=3, scale_w=8)
+
 '''
 env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
-model_path = 'models/animal/network-final.pkl'
-image1_path = '../../codes/adobe_stock_datasets/animal_textures_new/images/test_resize512_aug_crop_128/1000_F_99107656_XvbvoVVRintE5tmuh1MkdXqs8rkzoahB_NW_aug00000091.png'
-image2_path = '../../codes/adobe_stock_datasets/animal_textures_new/images/test_resize512_aug_crop_128/1000_F_87614886_hTyVkR2XzAJS2qRjmks6IQEAmuAzsuzP_NW_aug00000062.png'
-out_dir = 'results/animal/horizontal_interpolation_dummy'
-train = EasyDict(func='util_scripts.horizontal_interpolation', model_path=model_path, image1_path=image1_path, image2_path=image2_path, out_dir=out_dir, minibatch_size=32*num_gpus, scale_h=3, scale_w=8)
-'''
-'''
-env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
-model_path = 'models/animal/network-final.pkl'
+model_path = 'models/animal_texture/network-final.pkl'
 out_dir = 'results/animal/spatiotemporal_interpolation_video_dummy'
 train = EasyDict(func='util_scripts.generate_spatiotemporal_interpolation_video', model_path=model_path, out_dir=out_dir, changes=1, scale_h=8, scale_w=8, duration_sec=4.0, repeats=False)
 '''
 '''
 env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
-model_path = 'models/animal/network-final.pkl'
+model_path = 'models/animal_texture/network-final.pkl'
 out_dir = 'results/animal/texture_brush_video_dummy'
 train = EasyDict(func='util_scripts.texture_brush_video', model_path=model_path, out_dir=out_dir, scale_h_bg=4, scale_w_bg=16, scale_h_fg=8, scale_w_fg=8, stroke_radius_div=128.0, minibatch_size=32*num_gpus)
 '''
@@ -132,7 +138,7 @@ train = EasyDict(func='util_scripts.texture_brush_video', model_path=model_path,
 env.CUDA_VISIBLE_DEVICES = '0'; num_gpus = 1
 topic = 'tibra' #'leoraffe'#'tibra'
 in_dir = 'hybridization_fig/%s' % topic
-model_path = 'models/animal/network-final.pkl'
+model_path = 'models/animal_texture/network-final.pkl'
 out_dir = 'results/animal/hybridization_%s_dummy' % topic
 train = EasyDict(func='util_scripts.hybridization_CAF', model_path=model_path, in_dir=in_dir, out_dir=out_dir, train_size=train_size, rotation_enabled=False, weight_mode='horizontal_linear', sig_div=4.0)
 '''

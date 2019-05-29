@@ -32,7 +32,7 @@ import cv2
 import config
 import misc
 import tfutil
-from train import setup_snapshot_image_grid, my_swap_h, my_swap_w, block_permutation
+from run import setup_snapshot_image_grid, my_swap_h, my_swap_w, block_permutation
 from loss import fp32
 import dataset
 
@@ -1298,7 +1298,7 @@ def hybridization_CAF(model_path, in_dir, out_dir, train_size=128, rotation_enab
 # Generate horizontal interpolation over dataset.
 # To run, uncomment the appropriate line in config.py and launch train.py.
 
-def horizontal_interpolation(model_path, image1_path, image2_path, out_dir, minibatch_size, scale_h, scale_w):
+def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, minibatch_size, scale_h, scale_w):
     num_images = 2
 
     # Load model
@@ -1307,9 +1307,9 @@ def horizontal_interpolation(model_path, image1_path, image2_path, out_dir, mini
 
     # Load dataset
     reals_orig = np.zeros([num_images]+Es_zl.input_shape[1:]).astype(np.float32)
-    image1 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(image1_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    image1 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
     reals_orig[0,:,:,:] = image1
-    image2 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(image2_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    image2 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
     reals_orig[1,:,:,:] = image2
 
     # zg encoding 
@@ -1328,7 +1328,6 @@ def horizontal_interpolation(model_path, image1_path, image2_path, out_dir, mini
     print('Interpolating...')
     interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3]))
     for mb_begin in range(0, num_images, minibatch_size):
-        print('%d/%d' % (mb_begin, num_images), end='\r')
         mb_end = min(mb_begin + minibatch_size, num_images)
         mb_size = mb_end - mb_begin
         if config.zg_interp_variational == 'hard':
@@ -1445,14 +1444,13 @@ def horizontal_interpolation(model_path, image1_path, image2_path, out_dir, mini
         if mb_size != minibatch_size:
             interp_images_out_mb = interp_images_out_mb[:mb_size,:,:,:]
         interp_images_out[mb_begin:mb_end,:,:,:] = interp_images_out_mb[:,:,scale_h//2*G.output_shape[2]:(scale_h//2+1)*G.output_shape[2],:]
-    print('')
 
     print('Saving interpolation and cropping results...')
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # save interpolation results
-    idx1 = image1_path.rfind('/')
-    idx2 = image2_path.rfind('/')
-    path_interp = '%s/%s-blending-%s.png' % (out_dir, image1_path[idx1+1:-4], image2_path[idx2+1:-4])
-    IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[1,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
+    idx1 = imageL_path.rfind('/')
+    idx2 = imageR_path.rfind('/')
+    path_interp = '%s/%s-blending-%s.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
+    IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
     IMAGE_interp.save(path_interp, 'png')
