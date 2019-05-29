@@ -39,8 +39,8 @@ env.TF_CPP_MIN_LOG_LEVEL                        = '1'       # 0 (default) = Prin
 train_size = 128
 
 # Training and validation datasets
-#training_data = 'animal_texture_train_aug_with_labels'; val_data = 'animal_texture_test_aug_with_labels'
-training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
+training_data = 'animal_texture_train_aug_with_labels'; val_data = 'animal_texture_test_aug_with_labels'
+#training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
 #training_data = 'plant_texture_train_aug_with_labels'; val_data = 'plant_texture_test_aug_with_labels'
 
 training_set = EasyDict(tfrecord_dir=training_data);

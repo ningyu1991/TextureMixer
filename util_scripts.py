@@ -386,7 +386,7 @@ def texture_dissolve_video(model_path, imageStartUL_path, imageStartUR_path, ima
     zg_latents_ur = np.array(zg_mu_ur)
     zg_latents_bl = np.array(zg_mu_bl)
     zg_latents_br = np.array(zg_mu_br)
-    
+
     # encode zl latent tensors
     print('zl encoding...')
     zl_mu_ul, zl_log_sigma_ul = Es_zl.run(grid_reals_ul, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
@@ -587,38 +587,29 @@ def im2trajectory(im):
         trajectory.append([cur_y, cur_x])
     return trajectory
 
-def texture_brush_video(model_path, out_dir, scale_h_bg=4, scale_w_bg=16, scale_h_fg=8, scale_w_fg=8, stroke_radius_div=64.0, minibatch_size=8, mp4_fps=60, mp4_codec='libx265', mp4_bitrate='16M'):
+def texture_brush_video(model_path, imageBgUL_path, imageBgUR_path, imageBgBL_path, imageBgBR_path, imageFgUL_path, imageFgUR_path, imageFgBL_path, imageFgBR_path, stroke1_path, stroke2_path, stroke3_path, stroke4_path, out_dir, scale_h_bg=4, scale_w_bg=16, scale_h_fg=8, scale_w_fg=8, stroke_radius_div=128.0, minibatch_size=1, mp4_fps=60, mp4_codec='libx265', mp4_bitrate='16M'):
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     # Load model
     E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
     Gs_fcn_bg = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h_bg, scale_w=scale_w_bg, **config.G)
-    Gs_fcn_fg = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h_fg, scale_w=scale_w_fg, **config.G)
-
-    # random start and end points
-    val_set = dataset.load_dataset(data_dir=config.data_dir, verbose=True, **config.val_set)
-    grid_size, grid_size_interp, grid_reals, grid_labels, grid_zg_latents, grid_zl_latents = setup_snapshot_image_grid(E_zg, E_zl, G, val_set, [-1,1], [15,8], **config.grid)    
+    Gs_fcn_fg = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h_fg, scale_w=scale_w_fg, **config.G)  
     
-    # select foreground and background components at the 4 corners
-    #chosen_bg = [26, 46, 14, 93]; chosen_fg = [31, 33, 38, 27] # earth_EG32
-    #chosen_bg = [10, 65, 97, 53]; chosen_fg = [11, 0, 67, 66] # animal_EG32
-    chosen_bg = [10, 118, 53, 65]; chosen_fg = [11, 0, 36, 112] # animal_EG32_better
-    #chosen_bg = [24, 96, 36, 100]; chosen_fg = [12, 76, 110, 119] # plant_EG32
-    #chosen_bg = [57, 39, 83, 51]; chosen_fg = [38, 38, 38, 38] # earth_EG32 for width-varying brush
-    sample_fg_1 = np.array([0, 0, 2*Gs.input_shapes[0][2], 2*Gs.input_shapes[0][3]])
-    sample_fg_2 = np.array([0, 0, 2*Gs.input_shapes[0][2], 6*Gs.input_shapes[0][3]])
-    sample_fg_3 = np.array([0, 0, 6*Gs.input_shapes[0][2], 2*Gs.input_shapes[0][3]])
-    sample_fg_4 = np.array([0, 0, 6*Gs.input_shapes[0][2], 6*Gs.input_shapes[0][3]])
-    bg_ul = grid_reals[chosen_bg[0]:chosen_bg[0]+1,:,:,:]
-    bg_ur = grid_reals[chosen_bg[1]:chosen_bg[1]+1,:,:,:]
-    bg_bl = grid_reals[chosen_bg[2]:chosen_bg[2]+1,:,:,:]
-    bg_br = grid_reals[chosen_bg[3]:chosen_bg[3]+1,:,:,:]
-    fg_ul = grid_reals[chosen_fg[0]:chosen_fg[0]+1,:,:,:]
-    fg_ur = grid_reals[chosen_fg[1]:chosen_fg[1]+1,:,:,:]
-    fg_bl = grid_reals[chosen_fg[2]:chosen_fg[2]+1,:,:,:]
-    fg_br = grid_reals[chosen_fg[3]:chosen_fg[3]+1,:,:,:]
+    sample_fg_1 = np.array([0, 0, 2*Gs.input_shapes[0][2], 2*Gs.input_shapes[0][3]]) # brush_1 sampling position in the fg palatte
+    sample_fg_2 = np.array([0, 0, 2*Gs.input_shapes[0][2], 6*Gs.input_shapes[0][3]]) # brush_2 sampling position in the fg palatte
+    sample_fg_3 = np.array([0, 0, 6*Gs.input_shapes[0][2], 2*Gs.input_shapes[0][3]]) # brush_3 sampling position in the fg palatte
+    sample_fg_4 = np.array([0, 0, 6*Gs.input_shapes[0][2], 6*Gs.input_shapes[0][3]]) # brush_4 sampling position in the fg palatte
+    bg_ul = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageBgUL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    bg_ur = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageBgUR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    bg_bl = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageBgBL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    bg_br = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageBgBR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    fg_ul = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageFgUL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    fg_ur = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageFgUR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    fg_bl = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageFgBL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
+    fg_br = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageFgBR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])[np.newaxis,:,:,:]
 
     # encode zg
+    print('zg encoding...')
     zg_mu_bg_ul, zg_log_sigma_bg_ul = Es_zg.run(bg_ul, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zg_mu_bg_ur, zg_log_sigma_bg_ur = Es_zg.run(bg_ur, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zg_mu_bg_bl, zg_log_sigma_bg_bl = Es_zg.run(bg_bl, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
@@ -637,6 +628,7 @@ def texture_brush_video(model_path, out_dir, scale_h_bg=4, scale_w_bg=16, scale_
     zg_latents_fg_br = np.array(zg_mu_fg_br)
 
     # encode zl
+    print('zl encoding...')
     zl_mu_bg_ul, zl_log_sigma_bg_ul = Es_zl.run(bg_ul, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zl_mu_bg_ur, zl_log_sigma_bg_ur = Es_zl.run(bg_ur, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     zl_mu_bg_bl, zl_log_sigma_bg_bl = Es_zl.run(bg_bl, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
@@ -835,22 +827,11 @@ def texture_brush_video(model_path, out_dir, scale_h_bg=4, scale_w_bg=16, scale_
     images_sample_fg_4 = Gs_fcn_bg.run(interp_zg_latents_fg_4, interp_zl_latents_fg_4, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     
     # pre-compute movement
-    path_1 = 'skeletons_fig/C_skeleton.png'; im_1 = np.array(PIL.Image.open(path_1)); trajectory_1 = im2trajectory(im_1)
-    path_2 = 'skeletons_fig/V_skeleton.png'; im_2 = np.array(PIL.Image.open(path_2)); trajectory_2 = im2trajectory(im_2)
-    path_3 = 'skeletons_fig/P_skeleton.png'; im_3 = np.array(PIL.Image.open(path_3)); trajectory_3 = im2trajectory(im_3)
-    path_4 = 'skeletons_fig/R_skeleton.png'; im_4 = np.array(PIL.Image.open(path_4)); trajectory_4 = im2trajectory(im_4)
-    #path_1 = 'skeletons_fig/2_skeleton.png'; im_1 = np.array(PIL.Image.open(path_1)); trajectory_1 = im2trajectory(im_1)
-    #path_2 = 'skeletons_fig/0_skeleton.png'; im_2 = np.array(PIL.Image.open(path_2)); trajectory_2 = im2trajectory(im_2)
-    #path_3 = 'skeletons_fig/1_skeleton.png'; im_3 = np.array(PIL.Image.open(path_3)); trajectory_3 = im2trajectory(im_3)
-    #path_4 = 'skeletons_fig/9_skeleton.png'; im_4 = np.array(PIL.Image.open(path_4)); trajectory_4 = im2trajectory(im_4)
-    #path_1 = 'skeletons_fig/L_skeleton.png'; im_1 = np.array(PIL.Image.open(path_1)); trajectory_1 = im2trajectory(im_1)
-    #path_2 = 'skeletons_fig/A_skeleton.png'; im_2 = np.array(PIL.Image.open(path_2)); trajectory_2 = im2trajectory(im_2)
-    #path_3 = 'skeletons_fig/C_skeleton.png'; im_3 = np.array(PIL.Image.open(path_3)); trajectory_3 = im2trajectory(im_3)
-    #path_4 = 'skeletons_fig/A_skeleton.png'; im_4 = np.array(PIL.Image.open(path_4)); trajectory_4 = im2trajectory(im_4)
-    #path_1 = 'skeletons_fig/M_skeleton.png'; im_1 = np.array(PIL.Image.open(path_1)); trajectory_1 = im2trajectory(im_1)
-    #path_2 = 'skeletons_fig/M_skeleton.png'; im_2 = np.array(PIL.Image.open(path_2)); trajectory_2 = im2trajectory(im_2)
-    #path_3 = 'skeletons_fig/M_skeleton.png'; im_3 = np.array(PIL.Image.open(path_3)); trajectory_3 = im2trajectory(im_3)
-    #path_4 = 'skeletons_fig/M_skeleton.png'; im_4 = np.array(PIL.Image.open(path_4)); trajectory_4 = im2trajectory(im_4)
+    print('stroke configuring...')
+    im_1 = np.array(PIL.Image.open(stroke1_path)); trajectory_1 = im2trajectory(im_1)
+    im_2 = np.array(PIL.Image.open(stroke2_path)); trajectory_2 = im2trajectory(im_2)
+    im_3 = np.array(PIL.Image.open(stroke3_path)); trajectory_3 = im2trajectory(im_3)
+    im_4 = np.array(PIL.Image.open(stroke4_path)); trajectory_4 = im2trajectory(im_4)
     
     orig_1 = [0,0]; orig_2 = [0, 128]; orig_3 = [0, 256]; orig_4 = [0, 384]
     kernel_weight_1 = [np.zeros((Gs_fcn_bg.input_shapes[0][2], Gs_fcn_bg.input_shapes[0][3]))]
