@@ -59,7 +59,7 @@ python3 run.py \
 --model_path models/animal_texture/network-final.pkl \
 --imageL_path examples/animal_texture/1000_F_99107656_XvbvoVVRintE5tmuh1MkdXqs8rkzoahB_NW_aug00000094.png \
 --imageR_path examples/animal_texture/1000_F_109464954_aBfyWSbdZt5PNpUo7hOqDRPWmmvQj3v9_NW_aug00000092.png \
---out_dir results/animal/horizontal_interpolation
+--out_dir results/animal_texture/horizontal_interpolation
 ```
 ### Texture Dissolve
 
