@@ -40,10 +40,10 @@
   - `datasets/plant_texture_train_AdobeStock_ID_list.txt`
   - `datasets/plant_texture_test_AdobeStock_ID_list.txt`
 - Given raw images, run, e.g., the following command for data augmentation.
-```
-python3 data_augmentation.py --iPath animal_texture/test_resize512/ --oPath animal_texture_test_aug/ --num_aug 10000
-```
-- Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
+  ```
+  python3 data_augmentation.py --iPath animal_texture/test_resize512/ --oPath animal_texture_test_aug/ --num_aug 10000
+  ```
+- Then follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
 - For convenience, the prepared testing dataset of earth texture can be downloaded [here](https://drive.google.com/file/d/1A08JnZEUJGAFuLkhYtkqz7t9qnjMjVVj/view?usp=sharing). Unzip and put under `datasets/`.
 
 ## Pre-Trained Models
