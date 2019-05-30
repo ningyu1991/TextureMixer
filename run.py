@@ -609,7 +609,7 @@ if __name__ == "__main__":
     #------------------- training arguments -------------------
     parser.add_argument('--train_dir', type=str, default=' ') # The prepared training dataset directory that can be efficiently called by the code
     parser.add_argument('--val_dir', type=str, default=' ') # The prepared validation dataset directory that can be efficiently called by the code
-    parser.add_argument('--num_gpus', type=int, default=1) # The number of GPUs for training
+    parser.add_argument('--num_gpus', type=int, default=1) # The number of GPUs for training. Options {1, 2, 4, 8}. Using 8 NVIDIA GeForce GTX 1080 Ti GPUs, we suggest training for 3 days.
     #------------------- texture interpolation arguments -------------------
     parser.add_argument('--imageL_path', type=str, default=' ') # The left-hand side image for horizontal interpolation
     parser.add_argument('--imageR_path', type=str, default=' ') # The right-hand side image for horizontal interpolation
