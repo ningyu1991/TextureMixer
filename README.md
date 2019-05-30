@@ -66,7 +66,7 @@ python3 run.py \
 where
 - `train_dir`: The prepared training dataset directory that can be efficiently called by the code.
 - `val_dir`: The prepared validation dataset directory that can be efficiently called by the code.
-- `num_gpus`: The number of GPUs for training. Option {1, 2, 4, 8}. Using 8 NVIDIA GeForce GTX 1080 Ti GPUs, we suggest training for 3 days.
+- `num_gpus`: The number of GPUs for training. Options {1, 2, 4, 8}. Using 8 NVIDIA GeForce GTX 1080 Ti GPUs, we suggest training for 3 days.
 
 ## Applications
 ### Texture Interpolation
