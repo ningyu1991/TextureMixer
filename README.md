@@ -1,4 +1,4 @@
-# TextureMixer
+# Texture Mixer
 
 <img src='fig/palette_brush_teaser.png' width=400> <img src='fig/pipeline.png' width=450>
 
@@ -47,7 +47,7 @@
 - For convenience, the prepared testing dataset of earth texture can be downloaded [here](https://drive.google.com/file/d/1A08JnZEUJGAFuLkhYtkqz7t9qnjMjVVj/view?usp=sharing). Unzip and put under `datasets/`.
 
 ## Pre-Trained Models
-- The pre-trained TextureMixer models can be downloaded from:
+- The pre-trained Texture Mixer models can be downloaded from:
   - [Animal texture](https://drive.google.com/file/d/1zTRwT5W8ExfnPRUZQ5kcu70c_BYzT9u2/view?usp=sharing)
   - [Earth texture](https://drive.google.com/file/d/1ObAFBPGaRJFo11LUa0qNhRX14nTEWKC1/view?usp=sharing)
   - [Plant texture](https://drive.google.com/file/d/1lAMZyXy9wYzAjseeBLw6XWq1XY9FE9SV/view?usp=sharing)
