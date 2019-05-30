@@ -152,6 +152,3 @@ After that, post-process the output hybridization image by [Auto-Blend Layers](h
 - We acknowledge the Maryland Advanced Research Computing Center for providing computing resources.
 - We thank to the photographers for licensing photos under Creative Commons or public domain.
 - We express gratitudes to the [Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) as we benefit a lot from their code.
-
-## Note
-- It is for non-commercial research purpose only. Adobe has been filing a patent for this work.
