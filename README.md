@@ -35,10 +35,10 @@
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
 - Raw training and testing images of earth texture are downloaded from [Flickr](https://www.flickr.com/) under Creative Commons or public domain license. They are saved at `datasets/earth_texture/`.
 - Raw training and testing images of animal texture or plant texture are copyrighted by Adobe and can be purchased from [Adobe Stock](https://stock.adobe.com/). We list the searchable image IDs at:
-  - `datasets/animal_texture_train_AdobeStock_ID_list.txt`
-  - `datasets/animal_texture_test_AdobeStock_ID_list.txt`
-  - `datasets/plant_texture_train_AdobeStock_ID_list.txt`
-  - `datasets/plant_texture_test_AdobeStock_ID_list.txt`
+  - `datasets/animal_texture/train_AdobeStock_ID_list.txt`
+  - `datasets/animal_texture/test_AdobeStock_ID_list.txt`
+  - `datasets/plant_texture/train_AdobeStock_ID_list.txt`
+  - `datasets/plant_texture/test_AdobeStock_ID_list.txt`
 - Given raw images, run, e.g., the following command for data augmentation.
   ```
   python3 data_augmentation.py --iPath earth_texture/test_resize512/ --oPath earth_texture_test_aug/ --num_aug 10000
