@@ -10,14 +10,14 @@
 
 ## Texture Dissolve 1024x1024
 <img src='fig/texture_dissolve_animal_loop.gif' width=800>
-<img src='fig/texture_dissolve_plant_loop.gif' width=800>
 <img src='fig/texture_dissolve_earth_loop.gif' width=800>
+<img src='fig/texture_dissolve_plant_loop.gif' width=800>
 
 ## Texture Brush 512x2048
 <img src='fig/texture_brush_animal.gif' width=800>
 <img src='fig/texture_brush_animal_camouflage.gif' width=800>
-<img src='fig/texture_brush_plant.gif' width=800>
 <img src='fig/texture_brush_earth.gif' width=800>
+<img src='fig/texture_brush_plant.gif' width=800>
 
 ## Animal hybridization
 <img src='fig/beardog.png' width=800>
