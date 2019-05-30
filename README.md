@@ -52,6 +52,21 @@
   - [Earth texture](https://drive.google.com/file/d/1ObAFBPGaRJFo11LUa0qNhRX14nTEWKC1/view?usp=sharing)
   - [Plant texture](https://drive.google.com/file/d/1lAMZyXy9wYzAjseeBLw6XWq1XY9FE9SV/view?usp=sharing)
   - Unzip and put under `models/`.
+  
+## Training
+After data preparation, run, e.g.,
+```
+python3 run.py \
+--app train \
+--train_dir earth_texture_train_aug_with_labels/ \
+--val_dir earth_texture_test_aug_with_labels/ \
+--out_dir models/model/ \
+--num_gpus 8
+```
+where
+- `train_dir`: The prepared training dataset directory that can be efficiently called by the code.
+- `val_dir`: The prepared validation dataset directory that can be efficiently called by the code.
+- `num_gpus`: The number of GPUs for training. Option {1, 2, 4, 8}. Using 8 NVIDIA GeForce GTX 1080 Ti GPUs, we suggest training for 3 days.
 
 ## Applications
 ### Texture Interpolation
