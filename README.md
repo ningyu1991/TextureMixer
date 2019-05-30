@@ -33,20 +33,18 @@
 - Clone the [official VGG repository](https://github.com/machrisaa/tensorflow-vgg) into the current direcotory.
 
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
-- Raw training and testing images are saved at:
-  - `datasets/animal_texture/`
-  - `datasets/earth_texture/`
-  - `datasets/plant_texture/`
-  - Run, e.g., the following command for data augmentation.
-    ```
-    python3 data_augmentation.py --iPath animal_texture/test_resize512/ --oPath animal_texture_test_aug/ --num_aug 10000
-    ```
-  - Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
-- For convenience, the prepared testing datasets can be downloaded from:
-  - [Animal texture](https://drive.google.com/file/d/15HGHJuEMMbaUPMyH23iQrru0teH1gJmw/view?usp=sharing)
-  - [Earth texture](https://drive.google.com/file/d/1A08JnZEUJGAFuLkhYtkqz7t9qnjMjVVj/view?usp=sharing)
-  - [Plant texture](https://drive.google.com/file/d/1HPTOc_10Uz1BXQK8_GrS0y9hEjnaBz-0/view?usp=sharing)
-  - Unzip and put under `datasets/`.
+- Raw training and testing images of earth texture are downloaded from [Flickr](https://www.flickr.com/) under Creative Commons or public domain license. They are saved at `datasets/earth_texture/`.
+- Raw training and testing images of animal texture or plant texture are copyrighted by Adobe and can be purchased from [Adobe Stock](https://stock.adobe.com/). We list the searchable image IDs at:
+  - `datasets/animal_texture_train_AdobeStock_ID_list.txt`
+  - `datasets/animal_texture_test_AdobeStock_ID_list.txt`
+  - `datasets/plant_texture_train_AdobeStock_ID_list.txt`
+  - `datasets/plant_texture_test_AdobeStock_ID_list.txt`
+- Given raw images, run, e.g., the following command for data augmentation.
+```
+python3 data_augmentation.py --iPath animal_texture/test_resize512/ --oPath animal_texture_test_aug/ --num_aug 10000
+```
+- Follow the [official Progressive GAN repository](https://github.com/tkarras/progressive_growing_of_gans) "Preparing datasets for training" Section for dataset preparation. Use the `create_from_images` option in `dataset_tool.py`. The prepared data enables efficient streaming.
+- For convenience, the prepared testing dataset of earth texture can be downloaded [here](https://drive.google.com/file/d/1A08JnZEUJGAFuLkhYtkqz7t9qnjMjVVj/view?usp=sharing). Unzip and put under `datasets/`.
 
 ## Pre-Trained Models
 - The pre-trained TextureMixer models can be downloaded from:
