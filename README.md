@@ -60,7 +60,7 @@ python3 run.py \
 --app train \
 --train_dir earth_texture_train_aug_with_labels/ \
 --val_dir earth_texture_test_aug_with_labels/ \
---out_dir models/model/ \
+--out_dir models/earth_texture/ \
 --num_gpus 8
 ```
 where
