@@ -39,8 +39,8 @@ env.TF_CPP_MIN_LOG_LEVEL                        = '1'       # 0 (default) = Prin
 train_size = 128
 
 # Training and validation datasets
-training_data = 'animal_texture_train_aug_with_labels'; val_data = 'animal_texture_test_aug_with_labels'
-#training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
+#training_data = 'animal_texture_train_aug_with_labels'; val_data = 'animal_texture_test_aug_with_labels'
+training_data = 'earth_texture_train_aug_with_labels'; val_data = 'earth_texture_test_aug_with_labels'
 #training_data = 'plant_texture_train_aug_with_labels'; val_data = 'plant_texture_test_aug_with_labels'
 
 training_set = EasyDict(tfrecord_dir=training_data);
@@ -73,7 +73,7 @@ result_dir = 'models/new_swap_%d_latentResEG_%d_latentResDC_%d_latentChannels_%d
 
 desc        = 'pgan'                                        # Description string included in result subdir name.
 random_seed = 1000                                          # Global random seed.
-train       = EasyDict(func='train.train_progressive_vae_interp_gans')  # Options for main training func.
+train       = EasyDict(func='run.train_TextureMixer')  # Options for main training func.
 E_zg        = EasyDict(func='networks.E_zg', fmap_base=fmap_base, fmap_max=fmap_max, latent_channels=latent_channels, use_pixelnorm=False, tanh_at_end=False)             # Options for encoder network.
 E_zl        = EasyDict(func='networks.E_zl', fmap_base=fmap_base, fmap_max=fmap_max, latent_res=latent_res_EG, latent_channels=latent_channels, use_pixelnorm=False, tanh_at_end=False)             # Options for encoder network.
 G           = EasyDict(func='networks.G_res', fmap_base=fmap_base, fmap_max=fmap_max, latent_res=latent_res_EG, latent_channels=latent_channels, use_pixelnorm=False, tanh_at_end=True)             # Options for generator network.

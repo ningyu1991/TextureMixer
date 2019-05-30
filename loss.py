@@ -250,6 +250,7 @@ def EG_wgan(E_zg, E_zl, G, D_rec, G_fcn, D_interp, D_blend, minibatch_size, real
                 crop_blend_interp_feature = [crop_blend_interp_vgg.conv1_1, crop_blend_interp_vgg.conv2_1, crop_blend_interp_vgg.conv3_1, crop_blend_interp_vgg.conv4_1, crop_blend_interp_vgg.conv5_1]
                 crop_blend_interp_gram = [gram_matrix(l, data_format='NHWC') for l in crop_blend_interp_feature]
                 real_gram_2 = [tf.reverse(mat, axis=[0]) for mat in real_gram]
+                alpha = tf.random_uniform([minibatch_size, 1, 1, 1], 0.0, 1.0, dtype=interp_enc_zg_latents.dtype)
                 crop_blend_interp_gram_loss = (1.0 - alpha) * multi_layer_diff(crop_blend_interp_gram, real_gram_2, dtype=crop_blend_interp_images_out.dtype) + alpha * multi_layer_diff(crop_blend_interp_gram, real_gram, dtype=crop_blend_interp_images_out.dtype)
                 crop_blend_interp_gram_loss *= gram_weight
                 crop_blend_interp_gram_loss = tfutil.autosummary('Loss/crop_blend_interp_gram_loss', crop_blend_interp_gram_loss)
