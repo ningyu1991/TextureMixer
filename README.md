@@ -156,7 +156,7 @@ After that, post-process the output hybridization image by [Auto-Blend Layers](h
 ## Citation
 ```
 @inproceedings{yu2019texture,
-    author = {Yu, Ning and Barnes, Connelly and Shechtman, Eli and Amirghodsi, Sohrab and Lukáč, Michal},
+    author = {Yu, Ning and Barnes, Connelly and Shechtman, Eli and Amirghodsi, Sohrab and Luk\'{a}\v{c}, Michal},
     title = {Texture Mixer: A Network for Controllable Synthesis and Interpolation of Texture},
     booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
     year = {2019}
