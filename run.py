@@ -598,8 +598,6 @@ if __name__ == "__main__":
     misc.init_output_logging()
     np.random.seed(config.random_seed)
     print('Initializing TensorFlow...')
-    os.environ.update(config.env)
-    tfutil.init_tf(config.tf_config)
     config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
 
     parser = argparse.ArgumentParser()
@@ -643,7 +641,7 @@ if __name__ == "__main__":
         assert args.train_dir != ' ' and args.val_dir != ' ' and args.out_dir != ' '
         config.training_set = config.EasyDict(tfrecord_dir=args.train_dir, max_label_size='full')
         config.val_set = config.EasyDict(tfrecord_dir=args.val_dir, max_label_size='full')
-        config.train = config.EasyDict(func='run.train_TextureMixer', lr_mirror_augment=False, ud_mirror_augment=False, total_kimg=500000)
+        app = config.EasyDict(func='run.train_TextureMixer', lr_mirror_augment=False, ud_mirror_augment=False, total_kimg=500000)
         config.result_dir = args.out_dir
         config.num_gpus = args.num_gpus
         if config.num_gpus == 1:
@@ -658,25 +656,20 @@ if __name__ == "__main__":
         elif config.num_gpus == 8:
             config.env.CUDA_VISIBLE_DEVICES = '0,1,2,3,4,5,6,7'
             config.desc += '-preset-v2-8gpus'; config.sched.minibatch_base = 32; config.sched.lrate_dict = {128: 0.0015, 256: 0.002, 512: 0.003, 1024: 0.003}
-        tfutil.call_func_by_name(**config.train)
     elif args.app == 'interpolation':
         assert args.model_path != ' ' and args.imageL_path != ' ' and args.imageR_path != ' ' and args.out_dir != ' '
-        config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
         app = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir)        
-        tfutil.call_func_by_name(**app)
     elif args.app == 'dissolve':
         assert args.model_path != ' ' and args.imageStartUL_path != ' ' and args.imageStartUR_path != ' ' and args.imageStartBL_path != ' ' and args.imageStartBR_path != ' ' and args.imageEndUL_path != ' ' and args.imageEndUR_path != ' ' and args.imageEndBL_path != ' ' and args.imageEndBR_path != ' ' and args.out_dir != ' '
-        config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
         app = config.EasyDict(func='util_scripts.texture_dissolve_video', model_path=args.model_path, imageStartUL_path=args.imageStartUL_path, imageStartUR_path=args.imageStartUR_path, imageStartBL_path=args.imageStartBL_path, imageStartBR_path=args.imageStartBR_path, imageEndUL_path=args.imageEndUL_path, imageEndUR_path=args.imageEndUR_path, imageEndBL_path=args.imageEndBL_path, imageEndBR_path=args.imageEndBR_path, out_dir=args.out_dir)
-        tfutil.call_func_by_name(**app)
     elif args.app == 'brush':
         assert args.model_path != ' ' and args.imageBgUL_path != ' ' and args.imageBgUR_path != ' ' and args.imageBgBL_path != ' ' and args.imageBgBR_path != ' ' and args.imageFgUL_path != ' ' and args.imageFgUR_path != ' ' and args.imageFgBL_path != ' ' and args.imageFgBR_path != ' ' and args.stroke1_path != ' ' and args.stroke2_path != ' ' and args.stroke3_path != ' ' and args.stroke4_path != ' ' and args.out_dir != ' '
-        config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
         app = config.EasyDict(func='util_scripts.texture_brush_video', model_path=args.model_path, imageBgUL_path=args.imageBgUL_path, imageBgUR_path=args.imageBgUR_path, imageBgBL_path=args.imageBgBL_path, imageBgBR_path=args.imageBgBR_path, imageFgUL_path=args.imageFgUL_path, imageFgUR_path=args.imageFgUR_path, imageFgBL_path=args.imageFgBL_path, imageFgBR_path=args.imageFgBR_path, stroke1_path=args.stroke1_path, stroke2_path=args.stroke2_path, stroke3_path=args.stroke3_path, stroke4_path=args.stroke4_path, out_dir=args.out_dir)
-        tfutil.call_func_by_name(**app)
     elif args.app == 'hybridization':
         assert args.model_path != ' ' and args.source_dir != ' ' and args.out_dir != ' '
-        config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
         app = config.EasyDict(func='util_scripts.hybridization_CAF', model_path=args.model_path, source_dir=args.source_dir, out_dir=args.out_dir)
-        tfutil.call_func_by_name(**app)
+    
+    os.environ.update(config.env)
+    tfutil.init_tf(config.tf_config)
+    tfutil.call_func_by_name(**app)
 #----------------------------------------------------------------------------
