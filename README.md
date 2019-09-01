@@ -2,7 +2,7 @@
 
 <img src='fig/palette_brush_teaser.png' width=400> <img src='fig/pipeline.png' width=450>
 
-- Official Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) on controllable texture interpolation and several applications.
+- Official Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) ([poster](https://drive.google.com/file/d/1Smowh99tfxLBHPXYjjPMJ9J0j-xbvxXd/view?usp=sharing), [media coverage](https://mp.weixin.qq.com/s/b_gIB_zpUCcf2a8ImKMXRA) in Chinese) on controllable texture interpolation and several applications.
 - Contact: Ning Yu (ningyu AT umd DOT edu)
 
 ## Texture Interpolation 128x1024 (more results are shown in the [paper](https://arxiv.org/pdf/1901.03447.pdf))
