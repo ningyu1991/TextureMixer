@@ -1,5 +1,11 @@
 # Texture Mixer
 
+### [Texture Mixer: A Network for Controllable Synthesis and Interpolation of Texture](https://arxiv.org/pdf/1901.03447.pdf)
+[Ning Yu](https://sites.google.com/site/ningy1991/), [Connelly Barnes](http://www.connellybarnes.com/work/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Sohrab Amirghodsi](https://www.linkedin.com/in/sohrab-amirghodsi-a89548a3/), [Michal Lukáč](https://research.adobe.com/person/michal-lukac/)<br>
+CVPR 2019
+
+### [paper](https://arxiv.org/pdf/1901.03447.pdf) | [poster](https://drive.google.com/file/d/1Smowh99tfxLBHPXYjjPMJ9J0j-xbvxXd/view?usp=sharing) | [media coverage in Chinese](https://mp.weixin.qq.com/s/b_gIB_zpUCcf2a8ImKMXRA)
+
 <img src='fig/palette_brush_teaser.png' width=400> <img src='fig/pipeline.png' width=400>
 
 - Official Tensorflow implementation for our [CVPR'19 paper](https://arxiv.org/pdf/1901.03447.pdf) ([poster](https://drive.google.com/file/d/1Smowh99tfxLBHPXYjjPMJ9J0j-xbvxXd/view?usp=sharing), [media coverage](https://mp.weixin.qq.com/s/b_gIB_zpUCcf2a8ImKMXRA) in Chinese) on controllable texture interpolation and several applications.
