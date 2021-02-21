@@ -32,7 +32,7 @@ CVPR 2019
 - NVIDIA GPU + CUDA 10.0 + CuDNN 7.5
 - Python 3.6
 - tensorflow-gpu 1.12
-- Other Python dependencies: numpy, scipy, moviepy, Pillow, skimage, lmdb, opencv-python, cryptography, h5py, six
+- To install the other Python dependencies, run `pip3 install -r requirements.txt`.
 - Clone the [official VGG repository](https://github.com/machrisaa/tensorflow-vgg) into the current direcotory.
 
 ## Datasets: Animal Texture, Earth Texture, Plant Texture
