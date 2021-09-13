@@ -1297,19 +1297,25 @@ def hybridization_CAF(model_path, source_dir, out_dir, rotation_enabled=True, tr
 # Generate horizontal interpolation over dataset.
 # To run, uncomment the appropriate line in config.py and launch train.py.
 
-def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scale_h=3, scale_w=8, minibatch_size=1):
+def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scale_h=3, scale_w=8, minibatch_size=1, rotate=False, file_name='img'):
     num_images = 2
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
-    # Load model
     E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
+
     Gs_fcn = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h, scale_w=scale_w, **config.G)
 
     # Load dataset
     reals_orig = np.zeros([num_images]+Es_zl.input_shape[1:]).astype(np.float32)
-    image1 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageL_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    image1 = np.array(PIL.Image.open(imageL_path)).astype(np.float32)
+    if rotate:
+        image1 = np.rot90(image1)
+    image1 = np.transpose(misc.adjust_dynamic_range(image1, [0,255], [-1,1]), axes=[2,0,1])
     reals_orig[0,:,:,:] = image1
-    image2 = np.transpose(misc.adjust_dynamic_range(np.array(PIL.Image.open(imageR_path)).astype(np.float32), [0,255], [-1,1]), axes=[2,0,1])
+    image2 = np.array(PIL.Image.open(imageR_path)).astype(np.float32)
+    if rotate:
+        image2 = np.rot90(image2)
+    image2 = np.transpose(misc.adjust_dynamic_range(image2, [0,255], [-1,1]), axes=[2,0,1])
     reals_orig[1,:,:,:] = image2
 
     # zg encoding 
@@ -1323,10 +1329,10 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     print('zl encoding...')
     enc_zl_mu, enc_zl_log_sigma = Es_zl.run(reals_orig, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     reals_orig = reals_orig[:num_images,:,:,:]; enc_zl_mu = enc_zl_mu[:num_images,:,:,:]; enc_zl_log_sigma = enc_zl_log_sigma[:num_images,:,:,:]
-
+    
     # generating
     print('interpolating...')
-    interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3]))
+    interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3])) #2x3x128x1024かな?
     for mb_begin in range(0, num_images, minibatch_size):
         mb_end = min(mb_begin + minibatch_size, num_images)
         mb_size = mb_end - mb_begin
@@ -1450,6 +1456,16 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     # save interpolation results
     idx1 = imageL_path.rfind('/')
     idx2 = imageR_path.rfind('/')
-    path_interp = '%s/%s-interplatingTo-%s.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
-    IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
-    IMAGE_interp.save(path_interp, 'png')
+    #path_interp = '%s/%s-interplatingTo-%s.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
+    #IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
+    #IMAGE_interp.save(path_interp, 'png')
+    #path_interp = '%s/%s-interplatingTo-%s_2.png' % (out_dir, imageL_path[idx1+1:-4], imageR_path[idx2+1:-4])
+    #IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[1,:,:,:], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
+    #IMAGE_interp.save(path_interp, 'png')
+
+    NUM_DIVIDE = scale_w
+    divided_width = interp_images_out.shape[-1]//NUM_DIVIDE
+    for i in range(NUM_DIVIDE):
+        path_interp = '%s/%s.png' % (out_dir, file_name+str(i))
+        IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,divided_width*i:divided_width*(i+1)], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
+        IMAGE_interp.save(path_interp, 'png')

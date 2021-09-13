@@ -19,6 +19,7 @@ from collections import OrderedDict
 from itertools import chain
 
 import argparse
+from distutils.util import strtobool
 
 #----------------------------------------------------------------------------
 # Choose the size and contents of the image snapshot grids that are exported
@@ -594,7 +595,9 @@ def train_TextureMixer(
 # Main entry point.
 # Calls the function indicated in config.py.
 
-if __name__ == "__main__":
+
+#if __name__ == "__main__":
+def main(*_args):
     misc.init_output_logging()
     np.random.seed(config.random_seed)
     print('Initializing TensorFlow...')
@@ -635,8 +638,14 @@ if __name__ == "__main__":
     parser.add_argument('--stroke4_path', type=str, default=' ') # The trajectory image for the 4th stroke. The stroke pattern is sampled from the [7/8, 7/8] portion of the foreground palatte
     #------------------- texture brush arguments -------------------
     parser.add_argument('--source_dir', type=str, default=' ') # The directory containing the hole region to be interpolated, two known source texture images adjacent to the hole, and their global Adobe Content-Aware Fill (CAF) operation results
+    
+    #------------------- from flask api -------------------
+    parser.add_argument('--num_of_images', type=int, default=8)
+    parser.add_argument('--file_name', type=str, default='img')
+    parser.add_argument('--rotate', type=strtobool, default=False)
 
-    args = parser.parse_args()
+    args = parser.parse_args(_args)
+
     if args.app == 'train':
         assert args.train_dir != ' ' and args.val_dir != ' ' and args.out_dir != ' '
         config.training_set = config.EasyDict(tfrecord_dir=args.train_dir, max_label_size='full')
@@ -658,7 +667,7 @@ if __name__ == "__main__":
             config.desc += '-preset-v2-8gpus'; config.sched.minibatch_base = 32; config.sched.lrate_dict = {128: 0.0015, 256: 0.002, 512: 0.003, 1024: 0.003}
     elif args.app == 'interpolation':
         assert args.model_path != ' ' and args.imageL_path != ' ' and args.imageR_path != ' ' and args.out_dir != ' '
-        app = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir)        
+        app = config.EasyDict(func='util_scripts.horizontal_interpolation', model_path=args.model_path, imageL_path=args.imageL_path, imageR_path=args.imageR_path, out_dir=args.out_dir, scale_w=args.num_of_images, rotate=args.rotate, file_name=args.file_name)        
     elif args.app == 'dissolve':
         assert args.model_path != ' ' and args.imageStartUL_path != ' ' and args.imageStartUR_path != ' ' and args.imageStartBL_path != ' ' and args.imageStartBR_path != ' ' and args.imageEndUL_path != ' ' and args.imageEndUR_path != ' ' and args.imageEndBL_path != ' ' and args.imageEndBR_path != ' ' and args.out_dir != ' '
         app = config.EasyDict(func='util_scripts.texture_dissolve_video', model_path=args.model_path, imageStartUL_path=args.imageStartUL_path, imageStartUR_path=args.imageStartUR_path, imageStartBL_path=args.imageStartBL_path, imageStartBR_path=args.imageStartBR_path, imageEndUL_path=args.imageEndUL_path, imageEndUR_path=args.imageEndUR_path, imageEndBL_path=args.imageEndBL_path, imageEndBR_path=args.imageEndBR_path, out_dir=args.out_dir)
