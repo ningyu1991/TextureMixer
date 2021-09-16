@@ -38,6 +38,15 @@ import dataset
 
 from custom_vgg19 import *
 
+from logging import getLogger
+from logging import config as logconfig
+import json
+
+with open('./log_config.json', 'r') as f:
+    log_conf = json.load(f)
+logconfig.dictConfig(log_conf)
+logger = getLogger("util_scripts_log")
+
 def gkern_corners_for_scale(out_length):
     sig = float(out_length) / 6.0
     ax = np.arange(0.0, float(out_length))
@@ -1319,19 +1328,19 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     reals_orig[1,:,:,:] = image2
 
     # zg encoding 
-    print('zg encoding...')
+    logger.debug('zg encoding...')
     enc_zg_mu, enc_zg_log_sigma = Es_zg.run(reals_orig, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     enc_zg_mu = enc_zg_mu[:num_images,:,:,:]; enc_zg_log_sigma = enc_zg_log_sigma[:num_images,:,:,:]
     if not config.zg_enabled:
         enc_zg_mu = np.zeros(enc_zg_mu.shape); enc_zg_log_sigma = np.ones(enc_zg_log_sigma.shape)
 
     # zl encoding 
-    print('zl encoding...')
+    logger.debug('zl encoding...')
     enc_zl_mu, enc_zl_log_sigma = Es_zl.run(reals_orig, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     reals_orig = reals_orig[:num_images,:,:,:]; enc_zl_mu = enc_zl_mu[:num_images,:,:,:]; enc_zl_log_sigma = enc_zl_log_sigma[:num_images,:,:,:]
     
     # generating
-    print('interpolating...')
+    logger.debug('interpolating...')
     interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3])) #2x3x128x1024かな?
     for mb_begin in range(0, num_images, minibatch_size):
         mb_end = min(mb_begin + minibatch_size, num_images)
@@ -1451,7 +1460,7 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
             interp_images_out_mb = interp_images_out_mb[:mb_size,:,:,:]
         interp_images_out[mb_begin:mb_end,:,:,:] = interp_images_out_mb[:,:,scale_h//2*G.output_shape[2]:(scale_h//2+1)*G.output_shape[2],:]
 
-    print('Saving interpolation and cropping results...')
+    logger.debug('Saving interpolation and cropping results...')
 
     # save interpolation results
     idx1 = imageL_path.rfind('/')

@@ -21,6 +21,15 @@ from itertools import chain
 import argparse
 from distutils.util import strtobool
 
+from logging import getLogger
+from logging import config as logconfig
+import json
+
+with open('./log_config.json', 'r') as f:
+    log_conf = json.load(f)
+logconfig.dictConfig(log_conf)
+logger = getLogger("run_log")
+
 #----------------------------------------------------------------------------
 # Choose the size and contents of the image snapshot grids that are exported
 # periodically during training.
@@ -600,7 +609,7 @@ def train_TextureMixer(
 def main(*_args):
     misc.init_output_logging()
     np.random.seed(config.random_seed)
-    print('Initializing TensorFlow...')
+    logger.debug('Initializing TensorFlow...')
     config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
 
     parser = argparse.ArgumentParser()
@@ -680,5 +689,6 @@ def main(*_args):
     
     os.environ.update(config.env)
     tfutil.init_tf(config.tf_config)
+    logger.debug("Initializing TensorFlow has been done.")
     tfutil.call_func_by_name(**app)
 #----------------------------------------------------------------------------
