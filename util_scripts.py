@@ -1311,6 +1311,7 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
     E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
+    logger.debug("Models have been loaded.")
 
     Gs_fcn = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h, scale_w=scale_w, **config.G)
 
@@ -1328,20 +1329,24 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     reals_orig[1,:,:,:] = image2
 
     # zg encoding 
-    logger.debug('zg encoding...')
+    logger.debug('Latent zg encoding...')
     enc_zg_mu, enc_zg_log_sigma = Es_zg.run(reals_orig, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     enc_zg_mu = enc_zg_mu[:num_images,:,:,:]; enc_zg_log_sigma = enc_zg_log_sigma[:num_images,:,:,:]
     if not config.zg_enabled:
         enc_zg_mu = np.zeros(enc_zg_mu.shape); enc_zg_log_sigma = np.ones(enc_zg_log_sigma.shape)
+    
+    msg = "Latent vector of \"{}\" is \"{}\"\n".format(imageL_path, str(enc_zg_mu[0].reshape([1,-1])[0]))
+    msg += "\tLatent vector of \"{}\" is \"{}\"".format(imageR_path, str(enc_zg_mu[1].reshape([1,-1])[0]))
+    logger.debug(msg)
 
     # zl encoding 
-    logger.debug('zl encoding...')
+    logger.debug('Latent zl encoding...')
     enc_zl_mu, enc_zl_log_sigma = Es_zl.run(reals_orig, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_dtype=np.float32)
     reals_orig = reals_orig[:num_images,:,:,:]; enc_zl_mu = enc_zl_mu[:num_images,:,:,:]; enc_zl_log_sigma = enc_zl_log_sigma[:num_images,:,:,:]
     
     # generating
-    logger.debug('interpolating...')
-    interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3])) #2x3x128x1024かな?
+    logger.debug('Interpolating...')
+    interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3]))
     for mb_begin in range(0, num_images, minibatch_size):
         mb_end = min(mb_begin + minibatch_size, num_images)
         mb_size = mb_end - mb_begin
@@ -1474,7 +1479,10 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
 
     NUM_DIVIDE = scale_w
     divided_width = interp_images_out.shape[-1]//NUM_DIVIDE
-    for i in range(NUM_DIVIDE):
+    for i in range(1, NUM_DIVIDE-1):
         path_interp = '%s/%s.png' % (out_dir, file_name+str(i))
         IMAGE_interp = PIL.Image.fromarray(misc.adjust_dynamic_range(np.transpose(interp_images_out[0,:,:,divided_width*i:divided_width*(i+1)], axes=[1,2,0]), [-1,1], [0,255]).astype(np.uint8), 'RGB')
         IMAGE_interp.save(path_interp, 'png')
+        latent = ((i)*enc_zg_mu[0].reshape([1,-1])[0] + (NUM_DIVIDE-1-i)*enc_zg_mu[1].reshape([1,-1])[0])/(NUM_DIVIDE - 1)
+        msg = "Interpolating latent vector of \"{}\" is \"{}\"".format(path_interp, str(latent))
+        logger.debug(msg)
