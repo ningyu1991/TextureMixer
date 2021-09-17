@@ -1347,7 +1347,8 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     # generating
     logger.debug('Interpolating...')
     interp_images_out = np.zeros((num_images, Gs_fcn.output_shape[1], G.output_shape[2], Gs_fcn.output_shape[3]))
-    for mb_begin in range(0, num_images, minibatch_size):
+    num_loop = 1
+    for mb_begin in range(0, num_loop, minibatch_size):
         mb_end = min(mb_begin + minibatch_size, num_images)
         mb_size = mb_end - mb_begin
         if config.zg_interp_variational == 'hard':
