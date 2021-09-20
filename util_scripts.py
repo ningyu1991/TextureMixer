@@ -1310,8 +1310,16 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     num_images = 2
     if not os.path.isdir(out_dir): os.makedirs(out_dir)
 
-    E_zg, E_zl, G, D_rec, D_interp, D_blend, Es_zg, Es_zl, Gs = misc.load_pkl(model_path)
-    logger.debug("Models have been loaded.")
+    E_zg = config.myE_zg
+    E_zl = config.myE_zl
+    G = config.myG
+    D_rec = config.myD_rec
+    D_interp = config.myD_interp
+    D_blend = config.myD_blend
+    Es_zg = config.myEs_zg
+    Es_zl = config.myEs_zl
+    Gs = config.myGs
+
 
     Gs_fcn = tfutil.Network('Gs', reuse=True, num_channels=Gs.output_shape[1], resolution=Gs.output_shape[2], scale_h=scale_h, scale_w=scale_w, **config.G)
 

@@ -106,3 +106,13 @@ desc += '-preset-v2-8gpus'; num_gpus = 8; sched.minibatch_base = 64; sched.lrate
 
 # Numerical precision (choose one).
 desc += '-fp32'; sched.max_minibatch_per_gpu = {256: 16, 512: 8, 1024: 4}
+
+myE_zg = None
+myE_zl = None
+myG = None
+myD_rec = None
+myD_interp = None
+myD_blend = None
+myEs_zg = None
+myEs_zl = None
+myGs = None

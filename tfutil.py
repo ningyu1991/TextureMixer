@@ -55,7 +55,7 @@ def absolute_name_scope(scope): # Forcefully enter the specified name scope, ign
 def init_tf(config_dict=dict()):
     if tf.get_default_session() is None:
         tf.set_random_seed(np.random.randint(1 << 31))
-        create_session(config_dict, force_as_default=True)
+        return create_session(config_dict, force_as_default=True)
 
 #----------------------------------------------------------------------------
 # Create tf.Session based on config dict of the form

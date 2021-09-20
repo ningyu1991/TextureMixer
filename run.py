@@ -607,10 +607,6 @@ def train_TextureMixer(
 
 #if __name__ == "__main__":
 def main(*_args):
-    misc.init_output_logging()
-    np.random.seed(config.random_seed)
-    logger.debug('Initializing TensorFlow...')
-    config.env.CUDA_VISIBLE_DEVICES = '0'; config.num_gpus = 1
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--app', type=str, default=' ')
@@ -687,8 +683,5 @@ def main(*_args):
         assert args.model_path != ' ' and args.source_dir != ' ' and args.out_dir != ' '
         app = config.EasyDict(func='util_scripts.hybridization_CAF', model_path=args.model_path, source_dir=args.source_dir, out_dir=args.out_dir)
     
-    os.environ.update(config.env)
-    tfutil.init_tf(config.tf_config)
-    logger.debug("Initializing TensorFlow has been done.")
     tfutil.call_func_by_name(**app)
 #----------------------------------------------------------------------------
