@@ -1342,9 +1342,10 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
     enc_zg_mu = enc_zg_mu[:num_images,:,:,:]; enc_zg_log_sigma = enc_zg_log_sigma[:num_images,:,:,:]
     if not config.zg_enabled:
         enc_zg_mu = np.zeros(enc_zg_mu.shape); enc_zg_log_sigma = np.ones(enc_zg_log_sigma.shape)
-    
-    msg = "Latent vector of \"{}\" is \"{}\"\n".format(imageL_path, str(enc_zg_mu[0].reshape([1,-1])[0]))
-    msg += "\tLatent vector of \"{}\" is \"{}\"".format(imageR_path, str(enc_zg_mu[1].reshape([1,-1])[0]))
+
+    msg = "Latent vector of \"{}\" is \"{}\"".format(imageL_path, str(enc_zg_mu[0].reshape([1,-1])[0]))
+    msg += " Latent vector of \"{}\" is \"{}\"".format(imageR_path, str(enc_zg_mu[1].reshape([1,-1])[0]))
+    msg = msg.replace('\n',' ')
     logger.debug(msg)
 
     # zl encoding 
@@ -1494,4 +1495,5 @@ def horizontal_interpolation(model_path, imageL_path, imageR_path, out_dir, scal
         IMAGE_interp.save(path_interp, 'png')
         latent = ((i)*enc_zg_mu[0].reshape([1,-1])[0] + (NUM_DIVIDE-1-i)*enc_zg_mu[1].reshape([1,-1])[0])/(NUM_DIVIDE - 1)
         msg = "Interpolating latent vector of \"{}\" is \"{}\"".format(path_interp, str(latent))
+        msg = msg.replace('\n',' ')
         logger.debug(msg)
