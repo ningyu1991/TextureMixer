@@ -4,7 +4,7 @@
 [Ning Yu](https://ningyu1991.github.io/), [Connelly Barnes](http://www.connellybarnes.com/work/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Sohrab Amirghodsi](https://www.linkedin.com/in/sohrab-amirghodsi-a89548a3/), [Michal Lukáč](https://research.adobe.com/person/michal-lukac/)<br>
 CVPR 2019
 
-### [paper](https://arxiv.org/pdf/1901.03447.pdf) | [project page](https://ningyu1991.github.io/projects/TextureMixer.html) | [poster](https://drive.google.com/file/d/1Smowh99tfxLBHPXYjjPMJ9J0j-xbvxXd/view?usp=sharing) | [media coverage in Chinese](https://mp.weixin.qq.com/s/b_gIB_zpUCcf2a8ImKMXRA)
+### [paper](https://arxiv.org/pdf/1901.03447.pdf) | [project page](https://ningyu1991.github.io/projects/TextureMixer.html) | [poster](https://ningyu1991.github.io/homepage_files/poster_TextureMixer.pdf) | [media coverage in Chinese](https://mp.weixin.qq.com/s/b_gIB_zpUCcf2a8ImKMXRA)
 
 <img src='fig/palette_brush_teaser.png' width=400> <img src='fig/pipeline.png' width=400>
 
